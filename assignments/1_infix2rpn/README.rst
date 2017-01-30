@@ -70,7 +70,7 @@ Example::
 
     # Stats go to stderr, result to stdout.
     $ ./infix2rpn "(3+2)/3"  2>/dev/null
-    3 2 + 3
+    3 2 + 3 /
     $ ./infix2rpn "(3+2)/3"  >/dev/null
     stats 3 3 2
 
