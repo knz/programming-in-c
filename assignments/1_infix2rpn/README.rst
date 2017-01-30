@@ -8,8 +8,8 @@
 Objectives
 ==========
 
-You must implement a conversion program that converts between two
-notational systems for mathematical expressions.
+You must implement a stack API and a conversion program that converts
+between two notational systems for mathematical expressions.
 
 Requirements
 ============
