@@ -25,17 +25,21 @@ containing your name and Student ID(s).
 Behavior of the encoder and decoder programs
 ============================================
 
-The ``encode`` program must read data from its standard input and produce on its standard output:
+The ``encode`` program must:
 
-- on the first line, a representation of a Huffman tree, using the format
-  documented for the ``print_tree`` function;
-- starting from the 2nd line, the encoding of the input data in
-  ASCII-coded binary, that is using one full character "``0``" for
-  binary 0 and one full character "``1``" for binary 1;
-- at the end of the encoded data, the final marker character "``.``" followed by a newline character;
-- on the last line of output: the number of characters in the input,
-  the number of nodes in the Huffman tree, and the number of binary
-  digits in the encoded output.
+- accept an optional command-line argument that specifies which tree it should use -- if this argument
+  is not specified, the ``encode`` program should decide a Huffman tree itself;
+- read data to encode from its standard input; and
+- produce on its standard output
+  - on the first line, a representation of a Huffman tree it used, using the format
+    documented for the ``print_tree`` function;
+  - starting from the 2nd line, the encoding of the input data in
+    ASCII-coded binary, that is using one full character "``0``" for
+    binary 0 and one full character "``1``" for binary 1;
+  - at the end of the encoded data, the final marker character "``.``" followed by a newline character;
+  - on the last line of output: the number of characters in the input,
+    the number of nodes in the Huffman tree, and the number of binary
+    digits in the encoded output.
 
 The ``decode`` program must read data from its standard input:
 
@@ -73,7 +77,8 @@ Order of work (strongly suggested)
 
    Will be printed as: ``AB.C.``
 
-2. Using the provided example Huffman tree as constant, complete the ``encode``
+2. Using the provided example Huffman tree in the code as constant
+   tree input (ignoring the command-line argument), complete the ``encode``
    algorithm to compress an input file using that tree.
 
    This way the provided ``encode`` program can use both your
@@ -82,8 +87,9 @@ Order of work (strongly suggested)
    ``decode.ref`` program. You can then use ``decode.ref`` to check
    whether your work up to this point is correct.
 
-3. Again using the provided example Huffman tree as constant,
-   complete the ``decode`` algorithm to decompress an input file using that tree.
+3. Again using the provided example Huffman tree as constant (ignoring
+   the first line of input), complete the ``decode`` algorithm to
+   decompress input data using that tree.
 
    You can then use your ``encode`` program from step 2 to check your
    newly minted ``decode`` program.
@@ -106,8 +112,8 @@ Your grade starts from 0, and the following tests determine your grade:
 - +0,5pt if you have submitted an archive in the right format with an ``AUTHORS`` file.
 - +0,5pt if your source code builds without errors and you have modified ``tree.c``, ``encode.c`` or ``decode.c`` in any way.
 - +1pt if your ``print_tree`` function works.
-- +2pt if your ``encode`` program works using the provided example tree.
-- +2pt if your ``decode`` program works using the provided example tree.
+- +2pt if your ``encode`` program works using only the provided example tree.
+- +2pt if your ``decode`` program works using only the provided example tree.
 - -1pt if ``valgrind`` reports errors while running your converter.
 - -1pt if ``clang -W -Wall`` reports warnings when compiling your code
 
