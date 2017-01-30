@@ -51,8 +51,8 @@ Your grade starts from 0, and the following tests determine your grade:
 - +3pt if your ``mysort`` processes and sorts its input properly and terminates with exit code 0.
 - -0,5pt if your program misbehaves on zero-sized inputs.
 - -0,5pt if your program misbehaves when the last line does not terminate with a newline character.
-- -1pt if ``valgrind`` reports errors while running your converter.
-- -1pt if ``clang -W -Wall`` reports warnings when compiling your code
+- -1pt if ``valgrind`` reports errors while running your program.
+- -1pt if ``clang -W -Wall`` reports warnings when compiling your code.
 
 The following extra features will be tested to obtain higher grades,
 but only if you have obtained a minimum of 5 points on the list above already:
