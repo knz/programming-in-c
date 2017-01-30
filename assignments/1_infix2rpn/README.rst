@@ -120,10 +120,13 @@ but only if you have obtained a minimum of 5 points on the list above already:
   exponentiation at a higher precedence level than multiplication,
   that is, ``2*a^b^c`` is an expression and is equivalent to
   ``2*((a^b)^c)``, and converts it appropriately.
-- +1,5pt if your converter also supports *postfix function application*
+- +0,5pt if your converter also supports *postfix function application*
   at the highest precedence level, that is, ``(x)foo`` is an expression
   (means apply function ``foo`` to ``(x)``, ``3^(4+2)foo`` is equivalent to
   ``3^((4+2)foo)`` and is converted to "``3 4 2 + foo ^``".
+- +1pt if your converter also supports *unary negation* in front of simple
+  numbers and grouped expressions using the symbol ``~`` (not "``-``"!), for
+  example ``~123`` or ``~(3+2)``.
 
 See also
 ========
