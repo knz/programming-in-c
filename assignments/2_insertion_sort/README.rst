@@ -8,15 +8,15 @@
 Objectives
 ==========
 
-You must implement a list API and a multi-tool sorting program.
+You must implement a list API and a multi-tool number sorting program.
 
 Requirements
 ============
 
 Your sorting program must be named ``mysort`` and its basic operation is as follows:
 
-- it reads input lines from its standard input;
-- it prints the same lines in sorted order on its standard output.
+- it reads input numbers from its standard input;
+- it prints the same numbers in sorted order on its standard output.
 
 You must submit your work as a tarball [#]_. Next to the source code,
 your archive must contain a text file file named “``AUTHORS``”
@@ -37,8 +37,10 @@ Getting started
 4. Implement the data structure in ``list.c``.
 
 5. Implement the input and insertion sort algorithm in
-   ``mysort.c``. Use various combinations of ``ls ... | ./mysort`` to
-   test your work.
+   ``mysort.c``.
+
+   You can use e.g. ``du ~ | awk {print $1} | ./mysort`` to test your
+   work.
 
 Grading
 =======
@@ -59,15 +61,14 @@ but only if you have obtained a minimum of 5 points on the list above already:
 
 - +1pt if your ``mysort`` accepts option ``-u`` which causes it to eliminate duplicate output lines.
 - +0,5pt if your ``mysort`` accepts option ``-n`` which causes it to prefix each output line with a count of the occurrences of the corresponding input.
-- +0,5pt if your ``mysort`` accepts option ``-s`` taking a single argument, which causes it to only consider input lines that start with that argument.
-- +0,5pt if your ``mysort`` accepts option ``-x`` taking a single argument, which causes it to ignore any input line that starts with that argument.
+- +0,5pt if your ``mysort`` accepts option ``-s`` taking a single argument, which causes it to only consider input lines multiple of that number.
+- +0,5pt if your ``mysort`` accepts option ``-x`` taking a single argument, which causes it to ignore any input line that are multiple of that number.
 - +0,5pt if your ``mysort`` accepts option ``-h`` taking a single positive number *N* as argument, which causes it to stop
   after outputting the first *N* lines in sorted order.
 - +0,5pt if your ``mysort`` accepts option ``-t`` taking a single positive number *N* as argument, which causes it to stop
   after outputting the last *N* lines in sorted order.
 - +0,5pt if your ``mysort`` accepts option ``-3`` which causes it to replace all
-  occurrences of the characters "t" or "T" by "4", "e" or "E" by "3", "s" or "S" by "5",
-  "l" by "1", "o" or "O" by "0", "z" or "Z" by "2" and "a" by "@".
+  occurrences of the numbers 51, 69 and 42 by 666.
 
 See also
 ========
