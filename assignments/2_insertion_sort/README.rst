@@ -2,8 +2,8 @@
  Assignment 2: mysort
 ======================
 
-:Date: xxx
-:Deadline: xxx
+:Date: February 1st 2017
+:Deadline: February 22nd 2017 23:59 (anywhere on earth)
 
 Objectives
 ==========
@@ -17,6 +17,9 @@ Your sorting program must be named ``mysort`` and its basic operation is as foll
 
 - it reads input numbers from its standard input;
 - it prints the same numbers in sorted order on its standard output.
+
+Your program must perform sorting by maintaining a sorted list in memory
+and maintaining this order while reading the input (insertion sort).
 
 You must submit your work as a tarball [#]_. Next to the source code,
 your archive must contain a text file file named “``AUTHORS``”
