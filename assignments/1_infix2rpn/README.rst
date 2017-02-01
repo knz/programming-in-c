@@ -2,8 +2,8 @@
  Assignment 1: Reverse-Polish Notation
 =======================================
 
-:Date: xxx
-:Deadline: xxx
+:Date: February 1st 2017
+:Deadline: February 15th 2017 23:59 (anywhere on earth)
 
 Objectives
 ==========
@@ -96,6 +96,12 @@ Getting started
 6. Implement the conversion algorithm in ``infix2rpn.c``. Use your tests
    to check your work.
 
+.. hint:: You will not need to analyze numbers and determine the value
+   of each number on the input. (Of course, you can do it, but it is not needed
+   to achieve a correct solution. The simple algorithm can look at digits
+   individually and then forget about them.) Check you the links referenced
+   at the end of the assignment!
+
 Grading
 =======
 
@@ -121,12 +127,28 @@ but only if you have obtained a minimum of 5 points on the list above already:
   that is, ``2*a^b^c`` is an expression and is equivalent to
   ``2*((a^b)^c)``, and converts it appropriately.
 - +0,5pt if your converter also supports *postfix function application*
-  at the highest precedence level, that is, ``(x)foo`` is an expression
-  (means apply function ``foo`` to ``(x)``, ``3^(4+2)foo`` is equivalent to
-  ``3^((4+2)foo)`` and is converted to "``3 4 2 + foo ^``".
-- +1pt if your converter also supports *unary negation* in front of simple
-  numbers and grouped expressions using the symbol ``~`` (not "``-``"!), for
-  example ``~123`` or ``~(3+2)``.
+  at the highest precedence level, that is, ``(x)F`` is an expression
+  (means apply function ``F`` to ``(x)``, ``3^(4+2)F`` is equivalent to
+  ``3^((4+2)F)`` and is converted to "``3 4 2 + F ^``"; only one-letter functions
+  can be supported).
+- +1pt if your converter also supports *unary negation* in front of
+  simple numbers and grouped expressions using the symbol ``~`` (not
+  "``-``"!), for example ``~123`` or ``~(3+2)``. If you choose to
+  implement both this feature and the previous one, ensure that
+  function application has a higher precedence than negation, that is,
+  ``~(3)F`` is equivalent to ``~((3)F)``.
+
+Summary of desired precedence levels:
+
+===== ==========
+Level Operator
+===== ==========
+1     Function application
+2     Negation
+3     Exponentiation
+4     Division and multiplication
+5     Addition and substraction
+===== ==========
 
 See also
 ========
