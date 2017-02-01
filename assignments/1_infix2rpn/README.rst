@@ -153,6 +153,12 @@ Level Operator
 See also
 ========
 
+- Video "What is a stack data structure"
+  https://www.youtube.com/watch?v=FNZ5o9S9prU
+
+- Wikibook "Programming Concepts: Stacks"
+  https://en.wikibooks.org/wiki/A-level_Computing/AQA/Paper_1/Fundamentals_of_data_structures/Stacks
+
 - Infix to postfix algorithm video:
   https://www.youtube.com/watch?v=LQ-iW8jm6Mk
 
