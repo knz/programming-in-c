@@ -14,6 +14,13 @@ between two notational systems for mathematical expressions.
 Requirements
 ============
 
+You should implement the stack API described in the ``stack.h`` file. This
+datastructure has not been covered in the lectures yet, but it is easy enough
+to understand. Note that for this assignment the size of the stack is limited
+to a fixed number, which is defined in the ``stack.c`` file. If you are
+unfamiliar with stacks, check out the reference links at the end of the
+assignment.
+
 Your conversion program must be named ``infix2rpn`` and must accept a
 single expression using infix notation on the command-line, and output
 the following:
