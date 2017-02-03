@@ -121,14 +121,14 @@ Your grade starts from 0, and the following tests determine your grade:
 - +1pt if your converter processes expressions without grouping and a single precedence level properly.
 - +1pt if your converter processes expressions with grouping and a single precedence level properly.
 - +1pt if your converter processes expressions with multiple precedence levels properly.
-- +0,5pt if your converter detects input errors properly and reports a correct exit code.
+- +0,5pt if your converter detects invalid characters and improperly matched parentheses properly and reports a correct exit code.
 - -1pt if ``valgrind`` reports errors while running your converter.
 - -1pt if ``clang -W -Wall`` reports warnings when compiling your code.
 
 The following extra features will be tested to obtain higher grades,
 but only if you have obtained a minimum of 5 points on the list above already:
 
-- +1pt if your converter handles spacing properly.
+- +1pt if your converter properly ignores spaces in the input.
 - +1pt if your converter also supports *left-associative*
   exponentiation at a higher precedence level than multiplication,
   that is, ``2*a^b^c`` is an expression and is equivalent to
