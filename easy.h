@@ -10,4 +10,4 @@ typedef unsigned *ref_to_unsigned_int;
 typedef long *ref_to_long;
 typedef unsigned long *ref_to_unsigned_long;
 typedef string *ref_to_string;
-#define ref_to(T) (T)*
+#define ref_to(T) T*
