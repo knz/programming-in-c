@@ -37,7 +37,7 @@ invalid input, and exit code 0 when it succeeds.
 
 You must submit your work as a tarball [#]_. Next to the source code,
 your archive must contain a text file file named “``AUTHORS``”
-containing your name and Student ID(s).
+containing your name and Student ID.
 
 .. [#] http://lmgtfy.com/?q=how+to+make+a+tarball
 
