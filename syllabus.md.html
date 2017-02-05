@@ -1,0 +1,1662 @@
+<meta charset="utf-8">
+
+**Programming in C**
+               Raphael ‘kena’ Poss
+
+This syllabus covers the part "Programming in C" of the course
+"Datastructuren" delivered to 1st year BSc INF and 2nd year BSc KI at
+the University of Amsterdam.
+
+Course introduction
+===================
+
+- Staff:
+  - Teachers: Tim Doolan + Raphael Poss
+  - Assistants: Jetske Beks, Marco Brohet, Lorian Coltof, Ysbrand Galama, Devin Hillenius, Erik Kooistra, Kyrian Maat, Thomas Schaper, David Veenstra, Youri Voet, Simon Polstra
+
+- Course page on Datanose:
+  - INF: https://datanose.nl/#course[56578]
+  - KI: https://datanose.nl/#course[48396]
+
+- [**Only 1 Blackboard page**](https://blackboard.ic.uva.nl/webapps/blackboard/execute/courseMain?course_id=_210035_1)
+
+- Lectures:
+  - "Datastructuren" every Thursday 3-5pm SP C0.05
+  - "Programming in C" - 6 lectures in February - irregular timetable
+  - Check Datanose!
+
+- Study work:
+  - Labs - 3 groups, 2x2 hours / group / week
+  - One assignment per week, posted on Blackboard
+  - ~10 hours self study / week
+  - Check Datanose!
+
+- Grading:
+  - INF: 15% PAV, 55% labs, 30% exam
+  - KI:  2/3 labs, 1/3 exam
+  - Check "Studiewijzer" on Blackboard
+
+- Contact: questions / requests etc
+  - Personal stuff: study advisor
+  - General stuff: ds2017-assist@list.uva.nl
+  - Discussion: IRC channel? Slack?
+
+**poll: progc1**
+<iframe src="https://iqpolls.com/p/e9ad5c73d0f06818a7968aeb/43a976af57947298b69c5b52" width="100%" height="400px">
+  https://iqpolls.com/vote/progc1
+</iframe>
+
+- Getting started: you'll need
+  1) a C compiler
+  2) a prompt to run your own programs.
+
+  **Now!** Otherwise: http://codepad.org/
+
+Introduction to C by example
+============================
+
+An example program:
+
+~~~c
+main() { return 42; }
+~~~
+
+What does this do? Try it!
+
+Steps:
+1. Put code into **text file**, name file with extension **.c**
+   - Pick your editor: `gedit`, `mousepad`, `gvim`, `vim`, `emacs`, etc.
+   - Attention: must be "plain text" - no Word, OpenOffice, etc.
+2. Compile code, e.g. with command "`cc`"
+3. Run program
+4. Ask shell for exit status: `echo $?`
+
+Demo:
+
+~~~shell
+$ gedit test1.c
+$ cc test1.c
+$ ./a.out
+$ echo $?
+42
+~~~
+
+Let's try another:
+
+~~~c
+main() { return 1 + 2 * 3; }
+~~~
+
+What does this program return?
+
+~~~shell
+$ gedit test2.c  # place code in file
+$ cc test2.c
+$ ./a.out
+$ echo $?
+(your guess here)
+~~~
+
+Attention: C uses **operator precedence** to determine evaluation order.
+Like in maths.
+
+Another one (`test3.c`):
+
+~~~c
+main
+(
+)
+{
+return
+40
++
+2
+;
+}
+~~~
+
+What does this tell you?
+
+**The C language is (mostly) insensitive to whitespace.**
+
+Let's look at the output of the C compiler a bit closer:
+
+~~~shell
+$ cc test2.c
+test2.c:1:1: warning: return type defaults to ‘int’ [-Wimplicit-int]
+ main() { return 42; }
+ ^~~~
+~~~
+
+What's going on?
+
+The C language is very simple, **you must always tell it the type of things.**
+
+Our `main` function returns an integer number, so we need to explain this (`test4.c`):
+
+~~~c
+// Before: "int" was omitted.
+// Now: we place "int" before "main".
+int main() { return 42; }
+~~~
+
+Try it! The C compiler should not complain any more.
+
+Oh, and what did we do here? Those two lines:
+
+~~~c
+// Before: "int" was omitted.
+// Now: we place "int" before "main".
+~~~
+
+The C code can contain **comments**.
+
+A comment in C is enclosed either by `//` ... [newline], or `/*` ... `*/`.
+
+**Use comments to explain your code! Always.**
+
+Summary
+-------
+
+- The smallest program in C starts with "`int main() {`" and ends with "`}`"
+- **Expressions** order operations using precedence, like in math.
+- A program must **return a value** to the environment with "`return`".
+- Whitespace does not matter.
+- Comments are ignored by the C language, but matter to the human reader.
+
+How to speak C aloud
+====================
+
+You must learn how to read C code aloud to someone else, so they can
+write what you say. You must also learn to listen to someone speaking
+C to you and write down what they say.
+
+For this you need words:
+
+| C thing | English | Nederlands |
+|---------|---------|------------|
+| `{` `}` | brace         | accolade |
+| `(` `)` | parenthesis   | parenthese, rond haakje |
+| `;`     | semicolon     | puntkomma |
+| ` `     | space         | spatie |
+|         | newline       | nieuw regel |
+
+Don't forget to say "open" and "close" ("gesloten") when needed.
+
+Try it:
+
+~~~c
+int main() {
+  return 42;
+}
+~~~
+
+You will need some more words to read most simple C programs:
+
+| C thing | English | Nederlands |
+|---------|---------|------------|
+| `#`     | hash, pound   | hekje |
+| `<` `>` | lower than, greater than | kleiner dan, groter dan |
+| `"`     | double quote  | dubbel aanhalingsteken |
+| `\`     | backslash     | backslash | 
+| `'`     | single quote  | enkel aanhalingsteken, apostrof |
+| `.`     | dot, period   | punt |
+| `,`     | comma         | komma |
+| `[` `]` | bracket       | haakje, vierkant haakje |
+| `/`     | slash         | slash, schuine streep |
+| `-`     | dash, minus   | streepje, minteken |
+| `_`     | underscore    | underscore, laag streepje |
+| `|`     | pipe, vertical bar | pipe, sluisteken |
+| `*`     | star          | sterretje |
+| `&`     | ampersand, "and" | ampersand, "en" |
+| `->`    | arrow, "min greater than" | pijltje, "streepje groter dan" |
+| `!=`    | different from | anders dan, ongelijk aan |
+
+With this you can read e.g. the following aloud:
+
+~~~c
+#include <stdio.h>
+int main() {
+  printf("hello, world.\n");
+  return 0;
+}
+~~~
+
+The remaining words are somewhat less common but also needed later, so learn them:
+
+| C thing | English | Nederlands |
+|---------|---------|------------|
+| `^`     | hat           | dakje |
+| `:`     | colon         | dubbelepunt |
+| `!`     | bang, exclamation mark | uitroepteken, oproepteken |
+| `?`     | question mark | vraagteken |
+
+Summary
+-------
+
+- C uses a lot of punctuation - you'll learn all of it incrementally.
+- Most punctuation signs are called the same as when you study literature.
+- Different words for different grouping: **braces, brackets, parentheses** (accolades, vierkante haakjes, parentheses).
+- Special cases:
+  - "`*`" is "star" ("sterretje"), not "asterisk"
+  - "`|`" is "pipe"
+  - "`->`" is called "arrow" / "piljtje"
+  - "`!=`" is called "different from" / "anders dan"
+  - "`&`" is more often called "and" ("en") than "ampersand"
+
+Printing stuff
+==============
+
+Consider the example from above:
+
+~~~c
+#include <stdio.h>
+int main() {
+  printf("hello, world.\n");
+  return 0;
+}
+~~~
+
+Try it! What does it do?
+
+Another one:
+
+~~~c
+#include <stdio.h>
+int main() {
+  printf("number: %d\n", 40 / 2);
+  return 0;
+}
+~~~
+
+Try it! What does it do?
+
+Intro to `printf`
+-----------------
+
+`printf` is defined like this:
+
+~~~c
+int printf(string fmt, ...);
+~~~
+
+Which means it takes a string as first argument, then a variable number of arbitrary arguments.
+
+What it does: use the first "format" argument as **template** to print the rest of the arguments.
+
+| Example use | Example output |
+|--------------|----------------|
+| `printf("hello");` | `hello` |
+| `printf("hel %d lo", 123);` | `hel 123 lo` |
+| `printf("%s, hello", "jane");` | `jane, hello` |
+| `printf("hello %s", "jane");`  | `hello jane` |
+
+Note how `%d` and `%s` are used:
+
+- `%d` for **integer numbers**
+- `%s` for **strings**
+
+Summary:
+
+- `printf` takes always at least one argument. This first argument must be a string.
+- For every `%` in the format, `printf` takes the next remaining argument and prints it.
+- Use `%s` for strings, `%d` for numbers.
+- If you want a newline at the end of the output, you need to tell `printf` explicitly with "`\n`".
+
+Intro to numbers and characters
+-------------------------------
+
+What does this program do?
+
+~~~c
+int main() {
+  printf("hello %d\n", 'i');
+}
+~~~
+
+Try it!
+
+**poll: progc3**
+<iframe src="https://iqpolls.com/p/14e6feee3cfbde32ef95b650/113ba9214ed2a1bd73e3987b" width="100%" height="400px">
+  https://iqpolls.com/vote/progc3
+</iframe>
+
+What's going on?
+
+- The special syntax `'i'` in the program is translated to the numeric value of the character "i".
+  See the [ASCII table](http://lmgtfy.com/?q=ascii+table) for a correspondance.
+- The function `printf` prints this number with `%d` as usual.
+
+What does this program do?
+
+~~~c
+int main() {
+  printf("hello %c\n", 105);
+}
+~~~
+
+Try it!
+
+~~~shell
+$ gedit test5.c
+$ cc test5.c
+$ ./a.out
+hello i
+~~~
+
+What's going on?
+
+The format code `%c` **prints a character with the code given** in the next number argument.
+
+The following three programs print **the same thing**:
+
+~~~c
+int main() {
+  printf("hello %c\n", 105);
+}
+~~~
+
+~~~c
+int main() {
+  int  mychar = 'i';
+  printf("hello %c\n", mychar);
+}
+~~~
+
+~~~c
+int main() {
+  printf("hello %c\n", 'i');
+}
+~~~
+
+Intro to `putchar`
+------------------
+
+The function `putchar` is defined as follows:
+
+~~~c
+// Print the character with code c.
+int putchar(int c);
+~~~
+
+Another example program:
+
+~~~c
+#include <stdio.h>
+int main() {
+  putchar('h');
+  putchar('i');
+  putchar('!');
+  putchar('\n');
+  return 0;
+}
+~~~
+
+What do you think?
+
+Now something slightly more complicated:
+
+~~~c
+#include <stdio.h>
+int main() {
+  putchar('h');
+  putchar(105);
+  return 0;
+}
+~~~
+
+What output do you see from this program when you run it from the command line?
+
+**poll: progc4**
+<iframe src="https://iqpolls.com/p/65edb56a9e6cbdee66bec82d/a88db6f4bfedbd29b860772b" width="100%" height="400px">
+  https://iqpolls.com/vote/progc4
+</iframe>
+
+What's going on: the shell is confused when the program does not terminate its output with a newline character.
+
+**Do not forget the final newline character.**
+
+Summary
+-------
+
+- `printf(fmt, ...)` to print stuff with a format (template).
+  - `%d` for numbers,
+  - `%s` for strings,
+  - `%c` for characters from a code.
+- `putchar(c)` to print individual characters from their code.
+- The syntax `'X'` (with single quotes!) translates the character "X" to a number automatically.
+- Don't forget to print a newline character (`\n`) at the end of output.
+- Use "`#include <stdio.h>`" at the beginning if you want to use `printf` or `putchar` without warnings.
+
+Interacting with the environment
+================================
+
+You already know how to *output* stuff from a program:
+- using the return value;
+- using `printf` to output text.
+
+**Now, how does input work?**
+
+There are many mechanisms for input, we will use just two of them:
+
+- **command-line arguments**
+- **standard input**
+
+Command-line arguments: `argc` and `argv`
+-----------------------------------------
+
+To accept command-line arguments your program must start like this:
+
+~~~c
+// New: argc, argv
+int main(int argc, string argv[]) {
+...
+}
+~~~
+
+Let's try it out:
+
+~~~c
+#include <stdio.h>
+int main(int argc, string argv[]) {
+   printf("%d\n", argc);
+}
+~~~
+
+Run it (you will need to download this file [easy.h](easy.h)):
+
+~~~shell
+$ gedit test6.c # put code in file
+$ cc test6.c -include easy.h
+$ ./a.out
+1
+$ ./a.out a
+2
+$ ./a.out a a a a a
+6
+$ 
+~~~
+
+What's going on?
+
+The special variable **argc** automatically receives the number of arguments, plus one.
+(Why "plus one"? See below.)
+
+Let's try out some more:
+
+~~~c
+#include <stdio.h>
+int main(int argc, string argv[]) {
+   printf("%s\n", argv[0]);
+}
+~~~
+
+~~~shell
+$ gedit test7.c # put code in file
+$ cc test7.c -include easy.h
+$ ./a.out
+./a.out
+$ 
+~~~
+
+What just happened? Hmmm.
+
+Let's try rename the program file generated by `cc`:
+
+~~~shell
+$ mv a.out   sometest
+$ ./sometest
+./sometest
+
+$ mv sometest yahoo
+$ ./yahoo
+./yahoo
+~~~
+
+What's going on?
+
+**The first element of the `argv` array automatically receives the name of the program.**
+
+So, `argv` is an "array." What's that?
+
+An array is a sequence of values next to each other in memory.
+
+In C the elements of an array are always numbered starting from 0.
+
+So what is in `argv` in the 2nd position? Let's find out.
+
+~~~c
+#include <stdio.h>
+int main(int argc, string argv[]) {
+   printf("%s\n", argv[1]);
+}
+~~~
+
+~~~shell
+$ gedit test8.c # put code in file
+$ cc test8.c -include easy.h
+$ ./a.out hello
+hello
+$ ./a.out world
+world
+~~~
+
+So `argv` automatically contains the command-line arguments.
+
+### Be careful with arrays
+
+What happens if we try to use an element that does not exist?
+
+~~~shell
+$ ./a.out # no extra argument!
+Segmentation fault (core dumped)
+$
+~~~
+
+Woah. What's going on?
+
+Trying to use an array element that does not exist is BAD.
+
+![Don't look at invalid array positions!](inv-array.jpg)
+
+
+**Don't write a program that accesses array elements that do not exist!**
+
+In the example above this is easy to check: the variable `argc` tells
+how many elements there are.
+
+Try this:
+
+~~~c
+#include <stdio.h>
+int main(int argc, string argv[]) {
+   // Check the number of arguments given.
+   if (argc != 2) {
+     printf("woops!\n");
+     return 1;
+   }
+
+   // Do stuff.
+   printf("%s\n", argv[1]);
+   return 0;
+}
+~~~
+
+~~~shell
+$ gedit test9.c # put code in file
+$ cc test9.c -include easy.h
+$ ./a.out
+woops!
+$ ./a.out hello
+hello
+~~~
+
+Easy? Here you've used `if ... else ...` to make a choice. We'll see more about that in a moment.
+
+Now, let's *print all the things!*
+
+~~~c
+int main(int argc, string argv[]) {
+   for (int i = 1; i < argc; i = i + 1) {
+      printf("%s\n", argv[i]);
+   }
+   return 0;
+}
+~~~
+
+~~~shell
+$ gedit test10.c # put code in file
+$ cc test10.c -include easy.h
+$ ./a.out hello world
+~~~
+
+What does this program print?
+
+**poll: progc5**
+<iframe src="https://iqpolls.com/p/747e1ac470310306359d482b/bd08dd1b082dabe7ba6dd93f" width="100%" height="400px">
+  https://iqpolls.com/vote/progc5
+</iframe>
+
+### Accepting numbers from the command-line
+
+`argv` contains strings. What if we want to turn them into numbers to compute with numbers?
+
+Say, we want to make a program that computes the sum of its two arguments.
+
+For this you'll need the following function:
+
+~~~
+// atoi onverts the string argument and produces a number (Ascii To Integer).
+int atoi(string v);
+~~~
+
+It's predefined in `stdlib.h`, which you'll need to include. Try this:
+
+~~~c
+#include <stdio.h>
+int main(int argc, string argv[]) {
+   // Check the number of arguments given.
+   if (argc != 3) {
+     printf("woops!\n");
+     return 1;
+   }
+
+   // Do stuff.
+   return atoi(argv[1]) + atoi(argv[2]);
+}
+~~~
+
+~~~shell
+$ gedit test11.c # put code in file
+$ cc test11.c -include easy.h
+$ ./a.out 100 23
+$ echo $?
+123
+$
+~~~
+
+You can also try this: (you'll need [easy.h](easy.h))
+
+~~~c
+#include <stdio.h>
+int main(int argc, string argv[]) {
+   // Check the number of arguments given.
+   if (argc != 3) {
+     printf("woops!\n");
+     return 1;
+   }
+
+   // Do stuff.
+   printf("%d\n", atoi(argv[1]) + atoi(argv[2]));
+}
+~~~
+
+~~~shell
+$ gedit test12.c # put code in file
+$ cc test12.c -include easy.h
+$ ./a.out 100 23
+123
+$
+~~~
+
+And maybe you'll find this more readable:
+
+~~~c
+#include <stdio.h>
+int main(int argc, string argv[]) {
+   // Check the number of arguments given.
+   if (argc != 3) {
+     printf("woops!\n");
+     return 1;
+   }
+
+   // New: store indermediate results
+   // in variables.
+   int a = atoi(argv[1]);
+   int b = atoi(argv[2]);
+   printf("%d\n", a + b);
+}
+~~~
+
+### Command-line: summary
+
+- use `int main(int argc, string argv[])` to start the program if you want to use command-line arguments.
+- `argc` contains the number of arguments plus one (the program name itself).
+- `argv` is an array containing the argument strings.
+  - starting at position 0 with the program name.
+  - last item is at position `argv-1`.
+- do not access array elements that do not exist!
+- use `atoi` (`#include <stdlib.h>`) to convert a string to a number which you can compute with.
+
+Standard input
+--------------
+
+That's the other common way to read input.
+
+It gives access to data that is entered *after the program has already
+started*.
+
+### Reading character by character
+
+You'll use this function:
+
+~~~c
+// getchar reads a single character and returns its code.
+int getchar();
+~~~
+
+For example:
+
+~~~c
+#include <stdio.h>
+int main() {
+   // Read a character (its code).
+   int c = getchar();
+
+   // Print the code.
+   printf("hello %d\n", c);
+   return 0;
+}
+~~~
+
+Run this! What do you see?
+
+~~~shell
+$ gedit test14.c # put the code in the file
+$ cc test14.c
+$ ./a.out
+(type something here)
+~~~
+
+For example: if you type "i", your program prints ... 105. If you type "e" your program prints 101.
+
+If you just press the enter key your program prints ... 10, the code for the newline character (see the ASCII table).
+
+**Note: the execution of the program is blocked until `getchar()` successfully reads a character.**
+If you do not provide input, your program never terminates.
+
+You can also pass input from another program, for example:
+
+~~~shell
+$ echo i | ./a.out
+hello 105
+~~~
+
+This tells the shell to redirect the output of `echo` to the standard input of your program. This way
+`echo` provides the character "i" to the standard input, and you do not need to type it in.
+
+### Handling "End of File"
+
+Suppose you want to write a program that prints the code of all the characters available on standard input, then stops.
+
+We need a way to know "when there is no more input".
+
+Conveniently, **getchar() returns the special value "`EOF`" when there is no more input available.**
+
+Try this:
+
+~~~c
+#include <stdio.h>
+int main() {
+   while(1) {
+     // Read a character code.
+     int c = getchar();
+     
+     // Was this the end of input?
+     if (EOF == c) {
+       return 0;
+     }
+
+     // No, print the character.
+     printf("hello %c\n", c);
+   }
+   return 0;
+}
+~~~
+
+~~~shell
+$ gedit test15.c # put the code in the file
+$ cc test15.c
+$ echo "world" | ./a.out
+hello w
+hello o
+hello r
+hello l
+hello d
+hello 
+$ 
+~~~
+
+What just happened?
+
+- The program contains a loop `while(1) { ... }`
+- Inside this loop, the program:
+  - reads one character with `getchar()`
+  - checks if the End-of-File condition was encountered `EOF == c`
+    - if it was encountered, the program terminates with `return`
+  - then it prints the character
+  - and the loop executes again.
+
+Note: **This general program structure (a loop containing code to
+read, test, compute, print something repeatedly) is very common. It is
+called an "event loop" or sometimes "read-eval-print-loop" (REPL).**
+
+Summary of all the things
+-------------------------
+
+- Read from command-line arguments with: `int main(int argc, string argv[])`
+  - Be careful with array sizes.
+- Read from standard input with `getchar()` and `EOF`.
+  - General structure "`while(1) { read ... test ... print }`" is very common.
+
+Functions
+=========
+
+You've seen plenty of functions already!
+
+`main`, `printf`, `putchar`, `getchar`, `atoi` are all functions.
+
+You can make your own functions too!
+
+Function definitions
+--------------------
+
+You can make your own functions!
+
+~~~c
+// square returns the value of its argument, squared.
+int square(int x) {
+  x = x * x;
+  return x;
+}
+
+int main() {
+  int c = square(1);
+  printf("%d\n%d\n", c, square(2));
+  for (int i = 3; i <= 10; i++)
+    printf("%d\n", square(i));
+  return 0;
+}
+~~~
+
+~~~shell
+$ gedit test18.c # put the code in the file
+$ cc test18.c
+$ ./a.out
+1
+4
+9
+...
+89
+100
+~~~
+
+Arguments passed by value
+-------------------------
+
+In general a function receives a *copy* of its arguments: the variables in the caller context are not modified!
+
+Consider the following:
+
+~~~c
+int square(int x) {
+   x = x * x;
+   return x;
+}
+
+int main() {
+   int x = 2;
+   int y = square(x);
+   x = x + 1;
+   printf("%d %d\n", x, y);
+   return 0;
+}
+~~~
+
+What does this program print?
+
+**poll: progc9**
+<iframe src="https://iqpolls.com/p/30c0718e7e61c6a568f6662f/dfc2eaf9421e0cc14c272b1a" width="100%" height="400px">
+https://iqpolls.com/vote/progc9
+</iframe>
+
+What's going on? In `square` the variable `x` is initialized with a *copy* of `x` in `main`.
+
+The variable named "`x`" in `square` and the variable named "`x`" in `main` are two different variables!
+
+Arguments passed by reference
+-----------------------------
+
+Sometimes, you really need a function to be able to modify the
+original variable in its caller.
+
+You can do this as follows:
+
+~~~c
+#include <stdio.h>
+
+// this function copies its first argument to the 2nd (writing in
+// the caller's context) if it is non-zero, then returns the
+// value of the first argument.
+int copy_if_nonzero(int x, ref_to(int) y) {
+   if (x != 0)
+      deref(y) = x;
+
+   return x;
+}
+
+int main() {
+   int z = 42;
+
+   copy_if_nonzero(0, ref(z));
+   printf("%d\n", z);
+
+   copy_if_nonzero(12, ref(z));
+   printf("%d\n", z);
+
+   return 0;
+}
+~~~
+
+Try with: (you'll need [easy.h](easy.h))
+
+~~~shell
+$ gedit test20.c # put code in file
+$ cc test20.c -include easy.h
+$ ./a.out
+42
+12
+~~~
+
+What's going on?
+
+- "`ref_to(int) y`"  declares the parameter `y` to be "a reference to another variable of type `int`"
+- the operator `deref(y)` says "access the variable referenced to by `y`"
+- the operator `ref(z)` (in `main`) says "create a reference to the variable `z`"
+
+What does the following program print?
+
+~~~c
+#include <stdio.h>
+
+int square_inplace(ref_to(int) a) {
+   int n = deref(a) * deref(a);
+   deref(a) = n;
+}
+
+int main() {
+   int x = 2;
+   square_inplace(ref(x));
+
+   ref_to(int) y = ref(x);
+   int z = deref(y);
+ 
+   square_inplace(ref(x));
+   square_inplace(ref(z));
+
+   printf("%d %d %d\n", x, deref(y), z);
+   return 0;
+}
+~~~
+
+**poll: progca**
+<iframe src="https://iqpolls.com/p/d3da7a9f832fba701f306754/15842cb4262ac3aa6b57f7b8" width="100%" height="400px">
+https://iqpolls.com/vote/progca
+</iframe>
+
+What's going on?
+
+1. `int x = 2` : makes a real variable named `x`, initialized to 2;
+2. `square_inplace(ref(x))` : `x` updated to 4;
+3. `ref_to(int) y = ref(x)` : `y` becomes another name for the variable already named `x`;
+4. `int z = deref(y)` : makes another real variable named `z`, initialized to the current value of the variable named `y` (also named `x`), i.e. 4;
+5. `square_inplace(ref(x))` : `x` updated to 16;
+6. `square_inplace(ref(z))` : `z` (separate from `x`!) updated to 16;
+7. `printf`: current value of `x` is 16; current value of `deref(y)` is the same as `x`, 16 too; current value of `z` is 16.
+
+Procedures
+----------
+
+What if you want to define a function *that has no return value*? For
+example a function that only prints stuff and does not compute.
+
+**This is a special case:**
+
+**use the `void` return type to define *procedures* (functions without a result).**
+
+For example:
+
+~~~c
+#include <stdio.h>
+
+// New! "void"
+// sayhello greets the person whose name is given as argument.
+void sayhello(string name) {
+  printf("hello, %s!\n", name);
+  // No return value in function with "void" return type.
+}
+
+int main(int argc, string argv[]) {
+  sayhello("joe"); sayhello("jane");
+  if (argc == 2)
+    sayhello(argv[1]);
+  return 0;
+}
+~~~
+
+Try it with: (you'll need [easy.h](easy.h))
+
+~~~shell
+$ gedit test19.c # put code in file
+$ cc test19.c -include easy.h
+$ ./a.out
+hello joe!
+hello jane!
+$ ./a.out robert
+hello joe!
+hello jane!
+hello robert!
+$
+~~~
+
+Summary
+-------
+
+- you can make your own functions! Syntax: `int foo(...) { ... }`
+- return values with `return` -- this also stops execution in the function!
+- by default, *arguments passed by value*.
+- you can *pass arguments by reference*:
+  - using `ref_to(T)` to declare a reference parameter,
+  - `deref(r)` to access the variable referenced to by `r`, and
+  - `ref(x)` to make a new reference to `x`.
+  - This syntax needs [easy.h](easy.h)!
+- make procedures (no return value) by replacing the return type by "`void`"
+
+What you just learned without me telling
+========================================
+
+You can **compute stuff** in C using *expressions*.
+
+You can **decide and do stuff** using *control structures*.
+
+You can **store** stuff using *variables*.
+
+You can **abstract** stuff using *functions*.
+
+You can "access variables remotely" with *references*.
+
+You already know all this from the examples!
+
+Now, let's bring some structure to it.
+
+Expressions
+===========
+
+Expressions in the program are evaluated to a **value** during execution.
+
+| Category | Format | What we call it in source code | Its value during execution |
+|----------|--------|-------------|----------------------------|
+| literal  | `"hello"` | a string literal | the string |
+| literal  | `'X'` | a character literal | the character's code (e.g. `'X'` has value 88) |
+| literal  | `123` | a number literal | the number |
+| arithmetic | `a + b` | "`a` plus `b`" | the sum of the values of `a` and `b` |
+| arithmetic | `a * b` | "`a` times `b`" | the product of the values of `a` and `b` |
+| comparison | `a < b` | "`a ` lower than `b`" | 1 if the value of `a` is smaller than the value of `b`, 0 otherwise
+| comparison | `a == b` | "`a ` test equals to `b`" | 1 if the value of `a` is equal the value of `b`, 0 otherwise
+| comparison | `a != b` | "`a ` test different from `b`" | 0 if the value of `a` is equal the value of `b`, 1 otherwise
+| indexing | `a[b]` | "`a` bracket `b` close bracket", or "`a` indexed by `b`" | the `b`-th element of `a` |
+| application | `a(b,c)` | "`a` parenthesis `b` comma `c` close parenthesis" or "function `a` applied to arguments `b` and `c`" | the result returned by function `a` called with the value of `b` and `c` as arguments |
+| misc     | `(a)` | "`a` enclosed in parentheses" | the value of `a` |
+| misc     | `ref(v)` or `addr_of(v)` (with [easy.h](easy.h)) | "reference to `v`" or "address of `v`" | a reference to `v` |
+| misc     | `deref(r)` (with [easy.h](easy.h)) | "deref `r`" or "`r`, dereferenced" | the variable referenced to by `r` |
+
+Example expressions in C:
+
+~~~c
+  (20 + 1) * 2
+~~~
+
+************************************
+* +--------+       +-------+       *
+* | lit 20 |       | lit 1 |       *
+* +--------+       +-------+       *
+*           \     /                *
+*            +---+       +-------+ *
+*            | + |       | lit 2 | * 
+*            +---+       +-------+ *
+*                 \     /          *
+*                  +---+           *
+*                  | × |           *
+*                  +---+           *
+*                    |             *
+*                 result           *
+************************************
+
+~~~c
+  12 + printf("hello %d", 20 - 8)
+~~~
+
+************************************************
+*                        +---------+ +-------+ *
+*                        | lit 20  | | lit 8 | *
+*                        +-------+-+ +---+---+ *
+*                                 \     /      *
+* +--------+  +----------------+ +-+---+-+     *
+* | printf |  | lit "hello %d" | |   -   |     *
+* +----+---+  +----+-----------+ +-+-----+     *
+*       \          |              /            *
+*     +--+---------+-------------+--+          *
+*     | function application        |          *
+*     +------------+----------------+          *
+*                  |                           *
+* +--------+       |                           *
+* | lit 12 |      /                            *
+* +------+-+     /                             *
+*         \     /                              *
+*       +--+---+-+                             *
+*       |    +   |                             *
+*       +--+-----+                             *
+*          |                                   *
+*        result                                *
+************************************************
+
+Some more expressions:
+
+~~~c
+  a < (3 + b)
+
+  x[y - 123]
+~~~
+
+**To predict the value of an expression, imagine the expression tree
+and evaluate the tree starting from the leaves.**
+
+Quiz: what does the following program print?
+
+~~~c
+int main() {
+   int c = "hello"['f'-'e'];
+   printf("%d\n", c - 1);
+   return 0
+}
+~~~
+
+**poll: progc6**
+<iframe src="https://iqpolls.com/p/6f1783fa71e0f4d202050b16/03554798637d9ad53fef5661" width="100%" height="400px">
+  https://iqpolls.com/vote/progc6
+</iframe>
+
+Summary
+-------
+
+- There are many sorts of expressions in C: `a + b`, `a * b`, etc.
+- A function call is an expression too: `a(b)`
+- Simple values, also called *literals*, are expression too: `'a'`, `"hello"`, `123`
+- During execution the program *evaluates* each expression to determine its *value*.
+  - Starting at the leaves of the expression tree.
+
+Control structures
+==================
+
+Conditional statement (`if`) and simple loops (`while`)
+-------------------------------------------------------
+
+These you need to remember:
+
+| Syntax | How we call this |
+|--------|------------------|
+| `if ( ... ) ...` | an `if` statement |
+| `if ( ... ) ... else ...` | an `if`..`else` statement |
+| `while ( ... ) ... ` | a `while` loop |
+| `do ... while ( ... )` | a `do`..`while` loop |
+
+Their behavior should be transparent if you already know stuff from other programming languages. Otherwise:
+
+- `if (a) b`
+
+  evaluates expression `a`, then runs `b` if the value of `a` is non-zero.
+
+For example:
+
+~~~c
+if (argc != 2) {
+  printf("woops!\n");
+  return 0;
+}
+~~~
+ 
+- `if (a) b else c`
+
+  evaluates expression `a`, then runs `b` if the value of `a` is non-zero, otherwise runs `c`.
+
+  For example:
+
+~~~c
+  if (argc == 2)
+    return atoi(argv[1]);
+  else
+    return 42;
+~~~
+
+- `while (a) b`
+
+  evaluates expression `a`, then runs `b` if the value of `a` is non-zero, then repeats.
+  
+  For example:
+
+~~~c
+while(1) { int c = getchar(); ... }
+~~~
+
+- `do b while(a)`
+  
+  runs `b` once. Then runs `while(a) b`.
+
+Braces or no braces?
+--------------------
+
+This code is valid:
+
+~~~c
+  if (argc == 2)
+    return atoi(argv[1]);
+  else
+    return 42;
+~~~
+
+This code is valid, too:
+
+~~~c
+  if (argc == 2) {
+    return atoi(argv[1]);
+  } else {
+    return 42;
+  }
+~~~
+
+What does the following print?
+
+~~~c
+  if (4 == 2 + 1)
+     printf("this is ");
+     printf("false\n");
+~~~
+
+General rule: **the braces group statements together.**
+
+Also: **Beware! `if`..`else` binds tightly.**
+
+What does the following program do?
+
+~~~c
+#include <stdio.h>
+int main() {
+   if (3 == 2 + 1)
+      if (4 == 2 + 1)
+        printf("a");
+	  
+   else
+     printf("b");
+    
+   printf("\n");
+   return 0;
+}
+~~~
+
+**poll: progc7**
+<iframe src="https://iqpolls.com/p/4ae8b22ec43187ff27f69cf7/5f9a02bcc1d7ab22309383ee" width="100%" height="400px">
+  https://iqpolls.com/vote/progc7
+</iframe>
+
+What's going on?
+
+`else` binds to the closest `if`:
+
+~~~c
+  if (a) if (b) c else d
+~~~
+
+is equivalent to
+
+~~~c
+  if (a) { if (b) c else d }
+~~~
+
+always, irrespective of spacing!
+
+**When in doubt, use braces.**
+
+Actually, **use braces always when you're a beginner.** That will prevent mistakes that are hard to find.
+
+`for` loops
+-----------
+
+Remember this:
+
+- **Usually, you can understand `for` loops easily using a common pattern.**
+- **When you can't recognize a common pattern, use the detailed analysis. This always works.**
+
+### `for` common patterns 
+
+| Common pattern | What this means | Values of `x` |
+|----------------|-----------------|---------------|
+| `for (x = A; x < B; ++x) ZZ` | repeat `ZZ` for `x` from `A` to `B` (exclusive) | `A`, `A+1`, `A+2` ... `B-1` |
+| `for (x = A; x <= B; ++x) ZZ` | repeat `ZZ` for `x` from `A` to `B` (inclusive) | `A`, `A+1`, `A+2` ... `B` |
+| `for (x = A; x < B; x = x + C) ZZ` | repeat `ZZ` for `x` from `A` to `B` (exclusive) by `C` increments | `A`, `A+C`, `A+2C` ... (up to and including the last value `A+k*C` smaller than `B`) |
+| `for (x = A; x > B; --x) ZZ` | repeat `ZZ` for `x` from `A` down to `B` (exclusive) | `A`, `A-1`, `A-2`, ... `B+1` |
+| `for (x = A; x >= B; --x) ZZ` | repeat `ZZ` for `x` from `A` down to `B` (inclusive) | `A`, `A-1`, `A-2`, ... `B` |
+| `for (x = A; x > B; x = x - C) ZZ` | repeat `ZZ` for `x` from `A` down to `B` (exclusive) by `C` decrements | `A`, `A-C`, `A-2C`, `A-3C` ... |
+
+For example, you've seen this before:
+
+~~~c
+#include <stdio.h>
+int main(int argc, string argv[]) {
+  int i;
+  for (i = 1; i < argc; ++i) {
+    printf("%s\n", argv[i]);
+  }
+  return 0;
+}
+~~~
+
+Here `for (i = 1; i < argc; ++i)` makes `i` go from `1` to the value of `argc` (exclusive), and executes `printf(...)` each time.
+
+Another one:
+
+~~~c
+#include <stdio.h>
+int main() {
+  int c;
+  for (c = 'a'; c <= 'z'; ++c) {
+    printf("%c = %d\n", c, c);
+  }
+  return 0;
+}
+~~~
+
+What does this do? Remember, literal characters evaluate to the character code!
+
+~~~
+$ gedit test16.c # put code in file
+$ cc test16.c
+$ ./a.out
+a 97
+b 98
+c 99
+...
+y 121
+z 122
+$
+~~~
+
+### `for` general form and definition
+
+General syntax:
+
+~~~c
+  for (a ; b ; c) d
+~~~
+
+Behavior:
+
+1. evaluates `a`.
+2. evaluates `b`.
+3. if the value of `b` is non-zero, then:
+
+   - runs `d`, then
+   - evaluates `c`, then
+   - start again at step 2.
+
+That's all!
+
+You can imagine the following substitution:
+
+~~~c
+  for ( ○ ; □ ; ▵ ) ◇
+~~~
+
+is equivalent to:
+
+~~~c
+  ○;
+  while (□) {
+      ◇
+      ▵;
+  }
+~~~
+
+The three expressions are called the *start expression*, the *condition expression* and the *step expression*. 
+
+In other words:
+
+~~~c
+  for ( start; condition; step ) { something; }
+~~~
+
+is equivalent to:
+
+~~~c
+  start;
+  while(condition) {
+     { something; }
+     step;
+  }
+~~~
+
+Let's try it:
+
+| `for` code | Equivalent to |
+|------------|---------------|
+| <pre>
+for(i = 0; i < 10; ++i)
+   printf("%d\n", i);
+</pre> | <pre>
+  i = 0;
+  while (i < 10) {
+     printf("%d\n", i);
+     ++i;
+  }
+</pre> |
+| <pre>
+for(c = 'z'; c >= 'a'; --c)
+   printf("%c %d\n", c, c);
+</pre> | <pre>
+  c = 'z';
+  while (c >= 'a') {
+     printf("%c %d\n", c, c);
+     --c;
+  }
+</pre> |
+| <pre>
+for(c = getchar(); c != EOF; c = getchar())
+   printf("hello %c\n", c);
+</pre> | <pre>
+  c = getchar();
+  while (c != EOF) {
+     printf("hello %c\n", c);
+     c = getchar();
+  }
+</pre> |
+
+Summary
+-------
+
+- `if (a) b else c` : "if `a` then `b` else `c`"
+  - the parentheses are mandatory around the condition!
+
+    "`if (x == a) { b }`", not "`if x == a { b }`"
+  - `else` binds tightly!
+
+    "`if (a) if (b) c else d`" equivalent to "`if (a) { if (b) c else d }`"
+- `while` : "repeat as long as the condition is true"
+- `do` .. `while` : "do once, then repeat as long as the condition is true"
+- `for (start ; cond ; step) thing` : "do `start`, then repeat `thing` then `step` as long as `cond` is true"
+
+C's increment and decrement expressions
+=======================================
+
+Thanks to "`for`" you have learned about some more expressions!
+
+| Category | Format | What we call it in source code | Its value during execution |
+|----------|--------|-------------|----------------------------|
+| unary   | `++a` | "plus plus `a`" | increment `a` by 1, then return the new value **after** the increment |
+| unary   | `--a` | "minus minus `a`" | decrement `a` by 1, then return the new value **after** the increment |
+| unary   | `a++` | "`a` plus plus" | the value of `a` **before** it is incremented by `1` |
+| unary   | `a--` | "`a` minus minus" | the value of `a` **before** it is decremented by `1` |
+
+What does the following program print?
+
+~~~c
+#include <stdio.h>
+int main() {
+  int a = 42, b = 69;
+  printf("%d %d ", a++, ++b);
+  printf("%d %d\n", a, b);
+  return 0
+}
+~~~
+
+**poll: progc8**
+<iframe src="https://iqpolls.com/p/9ebff337c5e208f6e4a58304/36ce385763f821558b9bba03" width="100%" height="400px">
+https://iqpolls.com/vote/progc8
+</iframe>
+
+
+Storing stuff: variables
+========================
+
+You have seen plenty of variables already!
+
+Here:
+
+~~~c
+  int a = 40 + 2;  // a is a variable!
+~~~
+
+~~~c
+  for (int i = 0; i < 20; i++) // i is a variable!
+      printf("%d\n", i);
+~~~
+
+~~~c
+int main(int argc, string argv[]) {
+  // argc and argv are variables!
+  ...
+}
+~~~
+
+Variable definitions
+--------------------
+
+What's common to all this:
+
+- you *declare a new variable* using the general syntax "`type name;`"
+
+  (the name of a type, a space, then the name of your new
+  variable, followed by a final semicolon).
+
+  For example, "`int a;`" or "`string b;`".
+- you can optionally set an initial value at the same time as the declaration.
+
+  For example, "`int a = 42;`" or "`string b = "hello";`"
+
+- you can declare multiple variables separated by commas:
+
+  For example, "`int a, b;`"
+
+  Or: "`int a = 42, b = 69;`"
+
+- the arguments to a functions are variables too!
+
+Variable assignments
+--------------------
+
+
+You can set a variable to a new value:
+
+- during its declaration, with the syntax "`type name = value;`" (see above);
+- using the **assignment operator**: "`name = newvalue`" (you've seen this already!);
+- using the increment/decrement operators: "`name++`", etc. (see above too!)
+
+**Beware! Do not use a variable before it is initialized.**
+
+For example, the following program is invalid:
+
+~~~c
+int main() {
+   int a;
+   return a;
+   a = 42;
+}
+~~~
+
+~~~shell
+$ gedit test17.c # put code in file
+$ cc test17.c
+test17.c: In function ‘main’:
+test17.c:3:11: warning: ‘a’ is used uninitialized in this function [-Wuninitialized]
+  return a;
+         ^
+~~~
+
+We can't run this program. Really. Don't try!
+
+![Don't use uninitialized variables!](uninit-var.jpg)
+
+Another example invalid use:
+
+~~~c
+#include <stdio.h>
+int main() {
+   int c;
+   while(c != EOF) {  // poor kitten!
+      c = getchar();
+      putchar(c);
+   }
+   return 0;
+}
+~~~
+
+Definitions and declarations
+============================
+
+- *Definition*: this is a thing, and here is how it works.
+- *Declaration*: I promise to the compiler that this thing exists. Somewhere else.
+
+Function definitions
+--------------------
+
+General syntax:
+
+~~~c
+type name(args...) {
+    // ... stuff ...
+    return value;
+    // ... stuff ...
+}
+~~~
+
+You read this as: "the *return type*, then the *function name*, then
+the *parameter definitions* inside parentheses, then the *body* of the
+function enclosed in braces."
+
+You can use the `return` statement at any point to stop the execution
+of the function and return the value of the expression to the
+*caller*.
+
+Function declaration
+--------------------
+
+General syntax:
+
+~~~c
+type name(args...);
+
+// or, optionally:
+extern type name(args...);
+~~~
+
+You read this as "the optional keyword `extern`, then the *return
+type*, then the *function name*, then the *parameter declarations*
+inside parentheses, then a semicolon."
+
+Header files
+------------
+
+Remember the thing "`#include <stdio.h>`"?
+
+What does this mean?
+
+Stay tuned!
+
+Types - so far
+==============
+
+We'll say more about types later. So far you have met three types:
+
+- `int` - regular numbers
+- `string` - character strings (with [easy.h](easy.h) only!)
+- `ref_of(T)` - a reference to another variable of type `T`  (with [easy.h](easy.h) only!)
+
+<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
