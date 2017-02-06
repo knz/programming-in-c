@@ -1735,13 +1735,299 @@ Summary
   - a *library* is a collection of predefined object files, containing
     `printf`, `atoi`, `getchar`, etc. 
 
-Types - so far
-==============
+Types
+=====
 
-We'll say more about types later. So far you have met three types:
+So far you have met three types:
 
-- `int` - regular numbers
+- `int` - whole numbers
 - `string` - character strings (with [easy.h](easy.h) only!)
 - `ref_of(T)` - a reference to another variable of type `T`  (with [easy.h](easy.h) only!)
+
+Basic types
+-----------
+
+These are the common types: `int`, `char`, `double`.
+
+Here are *all the basic types*:
+
+| Name | Synonyms | Description | Size in memory (bytes) | Possible values |
+|------|----------|-------------|------------------------|-----------------|
+| `char` | N/A | A small whole number | 1 <= **Sc** | either $[-2^{Sc-1} ... 2^{Sc-1}-1]$ or $0 ... 2^Sc-1$ - **it depends on the environment** |
+| `signed char` | N/A | A small signed whole number | 1 <= **Sc** | always $[-2^{Sc-1} ... 2^{Sc-1}-1]$ |
+| `unsigned char` | N/A | A small unsigned (positive) whole number | 1 <= **Sc** | always $0 ... 2^Sc-1$ |
+| `short` | `signed short` | A smallish whole number | 2 <= **Ss** | $[-2^{Ss-1} ... 2^{Ss-1}-1]$ |
+| `unsigned short` | N/A | A smallish positive whole number | 2 <= **Ss** | $[0 ... 2^{Ss}-1]$ |
+| `int` | `signed int` | A whole number | 2 <= **Si** | $[-2^{Si-1} ... 2^{Si-1}-1]$ |
+| `unsigned int` | `unsigned` | A  positive whole number | 2 <= **Si** | $[0 ... 2^{Si}-1]$ |
+| `long` | `signed long` | A bigger whole number | 4 <= **Sl** | $[-2^{Sl-1} ... 2^{Sl-1}-1]$ |
+| `unsigned long` | N/A | A bigger positive whole number | 4 <= **Sl** | $[0 ... 2^{Sl}-1]$ |
+| `long long` | `signed long long` | A yet bigger whole number | 8 <= **Sll** | $[-2^{Sll-1} ... 2^{Sll-1}-1]$ |
+| `unsigned long long` | N/A | A yet bigger positive whole number | 8 <= **Sll** | $[0 ... 2^{Sll}-1]$ |
+| `float` | N/A | A single precision FP number | 4 | $[ -3.40\times 10^{38} ... 3.40\times 10^{38} ] \cup \{ -\infty, +\infty, \text{NaN} \}$ |
+| `double` | N/A | A single precision FP number | 8 | $[ -1.80\times 10^{308} ... 1.80\times 10^{308} ] \cup \{ -\infty, +\infty, \text{NaN} \}$ |
+
+Guarantee: **Sc <= Ss <= Si <= Sl <= Sll**
+
+Some C implementations also provide "`long double`" but this is non-standard.
+
+For more information about floating-point numbers: http://liv.science.uva.nl/dfp.html
+
+Composite types
+---------------
+
+Here are *all the composite types*:
+
+- *complex types*: if `T` is a type, then "`typedef _Complex T t`" defines a new type `t`:
+  - it's the type of a complex number with real and imaginary parts of type `T`
+  - its size in memory is `2 * sizeof(T)`.
+- *reference types*: if `T` is a type, then "`typedef T *t`" (or "`typedef ref_to(T) t`" with [easy.h](easy.h)) defines a new type `t`:
+  - it's the type of a reference to a variable of type `T`
+  - its size in memory depends on the environment: usually 2, 4 or 8 bytes.
+- *void reference type*: "`void*`" is a type;
+  - it's the type of a reference to a variable of unknown type;
+  - its size in memory depends on the environment;
+- *array types*: if `T` is a type, then "`typedef T t[N]`" or "`typedef T t[]`" defines a new type `t`:
+  - it's the type of arrays of values of type `T`;
+  - its size in memory is either `N * sizeof(T)` if `N` is specified, or unknown otherwise.
+- *function types*: if `T`, `U`, `V` are types, then "`typedef T (*t)(U, V)`" defines a new type `t`;
+  - it's the type of references to functions taking parameters of type `U` and `V` and returning values of type `T`;
+  - its size in memory is the same as the size of `void*`
+- all the *structure types* (see below);
+- all the *union types* (see below);
+- all the *enumeration types* (see below).
+
+Here are some of the standard additional types predefined for you with `typedef` in `stdint.h`:
+
+| Name | Description | Size in memory (bytes) | Possible values |
+|------|-------------|------------------------|-----------------|
+| `int8_t`   | A 8-bit whole number | 1 | $-128 .. 127$ |
+| `uint8_t`  | A 8-bit positive whole number | 1 | $0 .. 255$ |
+| `int16_t`  | A 16-bit whole number | 2 | $-16384 .. 16383$ |
+| `uint16_t` | A 16-bit positive whole number | 2 | $0 .. 65535$ |
+| `int32_t`  | A 32-bit  whole number | 4 | $-2147483648 .. 2147483647$ |
+| `uint32_t` | A 32-bit positive whole number | 4 | $0 .. 4294967295$ |
+| `int64_t`  | A 32-bit  whole number | 8 | $-9223372036854775808 .. 9223372036854775807$ |
+| `uint64_t` | A 32-bit positive whole number | 8 | $0 .. 18446744073709551615$ |
+| `intptr_t` | A whole number of size at least as large as `sizeof(void*)` | (depends) | (depends) |
+| `uintptr_t` | A positive whole number of size at least as large as `sizeof(void*)` | (depends) | (depends) |
+| `intmax_t` | A whole number of the maximum supported size | (depends) | (depends) |
+| `uintmax_t` | A positive whole number of the maximum supported size | (depends) | (depends) |
+
+Array types
+-----------
+
+Array types in C are *weird*.
+
+At first they look all right:
+
+~~~c
+// Returns the nth element of somearray.
+int pick(int n, int somearray[10]) {
+  return somearray[n];
+}
+
+int myarray[10] = { 3, 2, 1, 4, 5, 7, 1, 3, 4, 5 };
+
+int main() {
+   // The function takes an array of 10 ints as parameter;
+   // The call gives an array of 10 ints as argument.
+   // Everything good.
+   return pick(3, myarray);
+}
+~~~
+
+Then you figure that the following is correct, too:
+
+~~~c
+// Returns the nth element of somearray.
+int pick(int n, int somearray[]) {
+  return somearray[n];
+}
+
+int myarray[10] = { 3, 2, 1, 4, 5, 7, 1, 3, 4, 5 };
+
+int main() {
+   // The function takes an array of ints as parameter, size unknown;
+   // The call gives an array of 10 ints as argument.
+   // This works.
+   return pick(3, myarray);
+}
+~~~
+
+A function argument can have an array type of unspecified size.
+
+An argument whose array type has a known size **automatically degenerates** to an array type of unknown size.
+
+Or in other words:
+- the **definition** of an array variable must specify its size;
+- the **declaration** of an array variable can omit its size.
+
+Perhaps not too weird yet, but now go figure this out:
+
+~~~c
+// Returns the nth element of somearray.
+int pick(int n, int somearray[]) {
+  ref_to(int) r = somearray;              // WEIRD
+  return r[n];                            // WOOO WEIRD
+}
+
+int myarray[10] = { 3, 2, 1, 4, 5, 7, 1, 3, 4, 5 };
+
+int main() {
+   ref_to(int) r = myarray; // WEIRD AGAIN
+   return pick(3, r); // r is reference, function wants array, HOW IS THIS POSSIBLE?
+}
+~~~
+
+Woah.
+
+To understand this, you must absolutely grok four completely **WEIRD** separate mechanisms that happen to work together in this example.
+
+1) **An expression of array type always automatically degenerates to a reference to its first element in every context.**
+
+   So this is valid: `int a[10];  ref_to(int) b = a;`
+
+   It defines `b` as a reference to the first element of `a`. It is equivalent to: `int a[10]; ref_to(int) b = ref(a[0]);`
+
+   This is valid too: `int a[10];  deref(a) = 42;`
+
+   It sets the first element of `a` to 42.
+
+2) **It is always valid to give an expression with a reference type to a function that expects an array type.**
+
+   So suppose you have a function `int foo(int a[10]) { return a[5]; }`
+
+   This is valid: `int b[10];  foo(b);`
+
+   This is valid, too: `int b[10]; ref_to(int) c = b; foo(c);`
+
+   Now, this is ... dangerous to kittens: `int b[3]; foo(b);`
+
+   For ... reasons ... the C compiler *accepts to compile* this last example but *its run-time behavior is undefined* (= kittens are eaten).
+
+3) **The expression `a[b]` is always strictly equivalent to `deref(a+b)` or `*(a+b)`.** This is a pure syntactic equivalence -- there is no magic.
+
+4) **If `a` is an expression that is a reference to an element of an array, then the expression `a+N` is a reference to the Nth element after the current element.**
+
+That's it! It's both devilishly simple and mind-boggedly complex.
+
+**Learn these 4 rules by heart.**
+
+Now let's deconstruct the example again:
+
+~~~c
+int pick(int n, int somearray[]) {
+  // here "somearray" has an array type.
+
+  // The following assignment is equivalent to:
+  //    ref_to(int) r = ref(somearray[0]);  // rule 1
+  ref_to(int) r = somearray;
+
+  // The following statement "return r[n]" is equivalent to:
+  //    ref_to(int) rn    = r + n;    // rule 3
+  //    int         value = deref(rn);      // rule 4
+  //    return value;
+  return r[n];
+}
+
+int main() {
+   // In the following call "pick(3, myarray)"
+   // The expression "myarray" automatically degenerates:
+   // the call is equivalent to:
+   //    ref_to(int) r = ref_to(a[0]);  // rule 1
+   //    pick(3, r);                    // call valid, rule 2
+   return pick(3, myarray);
+}
+~~~
+
+Pseudo `string` type
+--------------------
+
+Of course the `string` type does not really exist in C.
+
+In [easy.h](easy.h) you see the following:
+
+~~~c
+typedef char* string;
+~~~
+
+What's going on?
+
+Every time you have seen "`string`" in the previous examples you were really using "`ref_to(char)`" or "`char*`".
+
+Meanwhile, all the *string literals* (of the form `"..."` in code) have type `char[]`, i.e., array of `char`.
+
+So we have:
+
+~~~c
+int printf(ref_to(char), ...);
+
+int main() {
+   // The following is equivalent to:
+   //    char         s[6] = { 'h', 'e', 'l', 'l', 'o', 0 };
+   //    ref_to(char) p    = ref(s[0]); // rule 1
+   //    printf(p);
+   printf("hello");
+   return 0;
+}
+~~~
+
+### Commutativity of addition
+
+Remember, `a + b == b + a`?
+
+Now, rule 3 above says `a[b]` is strictly equivalent to `deref(a + b)`
+
+So it's also equivalent to `deref(b + a)`
+
+So it's also equivalent to `b[a]`
+
+Wooo! Magic!
+
+What does this program do?
+
+~~~c
+int main() {
+  printf("hello %c!", 1["world"]);
+  return 0;
+}
+~~~
+
+Enumeration types
+-----------------
+
+These are boring: the syntax "`enum { A, B, C }`" is an integer type which can only have the symbolic values `A`, `B` or `C`.
+
+It's possible to also specify numeric values: "`enum { A = 12, B = 23, C = 34 }`"
+
+Then it's possible to give the entire enumeration a name:
+
+~~~c
+typedef enum { A, B, C } myenum;
+~~~
+
+This way one can define more variables with the new type `myenum`. For example:
+
+
+~~~c
+typedef enum { A, B, C } myenum;
+
+int main() {
+   int x = A; // valid
+   myenum y = B; // valid
+   myenum z = 435; // warning (kittens are eaten)
+
+   return x + y + z; // valid: they are just numbers.
+}
+~~~
+
+The names used inside the `enum` declaration are called *enumeration constants*.
+
+Aggregate types: structures and unions
+--------------------------------------
+
+We'll see this shortly.
+
 
 <!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
