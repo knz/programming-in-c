@@ -29,7 +29,7 @@ Course introduction
   - Labs - 3 groups, 2x2 hours / group / week
   - One assignment per week, posted on Blackboard
   - ~10 hours self study / week
-  - Check Datanose!
+  - Check Datanose! check BlackBoard!
 
 - Grading:
   - INF: 15% PAV, 55% labs, 30% exam
@@ -68,6 +68,7 @@ Steps:
    - Pick your editor: `gedit`, `mousepad`, `gvim`, `vim`, `emacs`, etc.
    - Attention: must be "plain text" - no Word, OpenOffice, etc.
 2. Compile code, e.g. with command "`cc`"
+   - By default this produces a file named `a.out` - rename with `-o` if needed
 3. Run program
 4. Ask shell for exit status: `echo $?`
 
@@ -75,8 +76,12 @@ Demo:
 
 ~~~shell
 $ gedit test1.c
-$ cc test1.c
+$ cc test1.c     # produces "a.out"!
 $ ./a.out
+$ echo $?
+42
+$ cc test1.c -o test1
+$ ./test1
 $ echo $?
 42
 ~~~
@@ -1641,6 +1646,14 @@ You read this as "the optional keyword `extern`, then the *return
 type*, then the *function name*, then the *parameter declarations*
 inside parentheses, then a semicolon."
 
+Notes:
+
+- function declarations are optional: the compiler will make one automatically if you use a function that is not declared; however
+- **an implicit function declaration will cause a warning** and you should consider this a programming error.
+- a function definition is also a declaration.
+
+**Always declare your functions if you don't define them in the same source file!**
+
 Header files
 ------------
 
@@ -1648,7 +1661,73 @@ Remember the thing "`#include <stdio.h>`"?
 
 What does this mean?
 
-Stay tuned!
+There's no magic: **it tells the compiler to take the file `stdio.h` and copy it inside your program.**
+
+Look at what's in [stdio.h](stdio.h) yourself:
+
+~~~c
+extern int printf(string fmt, ...);
+extern int putchar(int);
+extern int getchar();
+#define EOF -1
+~~~
+
+In other words we don't *really* need to use `#include <stdio.h>`, the
+following works just as well:
+
+~~~c
+// Look ma', no #include!
+// We just need a suitable declaration of printf.
+extern int printf(string fmt, ...);
+
+int main() {
+  // just works!
+  printf("hello!\n");
+  return 0;
+}
+~~~
+
+Compilation and linking
+-----------------------
+
+So where does `printf` really come from?
+
+******************************************************************
+*                                           then                 *
+*                           +--------+   you run this            *
+*  you                      |   cc   | <-----+                   *
+*  write                    +-+---+--+                           *
+*  this               .-------'   '--------.                     *
+*   |                /                      \                    *
+*   v           +---+--+                     |                   *
+*  .--.         | cpp  |     .-----.       +-+--+      .-----.   *
+* | .c +---+--> | cc1  | -->|  obj  +--+-> | ld | --->| a.out |  *
+*  '--'    |    +------+     '-----'   |   +----+      '-----'   *
+*          |                           |                  ^      *
+*  .--.    |                   .----.  |                  |      *
+* | .h +---'                  | libc +-'              at the end *
+*  '--'                        '----'                 you run    *
+*    ^                           ^                     this      *
+*    |                           |                               *
+*    '-- printf declared here    |                               *
+*        for you already!        '-- printf is defined here      *
+*                                    for you already.            *
+******************************************************************
+
+Summary
+-------
+
+- A *definition* makes a function "here and now".
+- A *declaration* promises the function exists somewhere else.
+  - If you forget a function declaration, the C compiler makes one for you automatically (with a warning).
+- A *header file* is just a bunch of declarations.
+- `cc` is a command that really runs three other commands: `cpp`, `cc1` and `ld`.
+- `cpp` groups *source code* and *header files* together (and produces source code);-
+  - headers are just copy-pasted in the source code where `#include` is used! Nothing more.
+- `cc1` *translates* (compiles) source code to *object code*
+- `ld` groups object code together with "libc", also called *the C standard library*
+  - a *library* is a collection of predefined object files, containing
+    `printf`, `atoi`, `getchar`, etc. 
 
 Types - so far
 ==============
