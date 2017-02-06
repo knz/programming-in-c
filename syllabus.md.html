@@ -1699,8 +1699,8 @@ So where does `printf` really come from?
 *                           +--------+   you run this            *
 *  you                      |   cc   | <-----+                   *
 *  write                    +-+---+--+                           *
-*  this               .-------'   '--------.                     *
-*   |                /                      \                    *
+*  this               .-------'   '---------.                    *
+*   |                /                       \                   *
 *   v           +---+--+                     |                   *
 *  .--.         | cpp  |     .-----.       +-+--+      .-----.   *
 * | .c +---+--> | cc1  | -->|  obj  +--+-> | ld | --->| a.out |  *
@@ -1749,9 +1749,9 @@ Here are *all the basic types*:
 
 | Name | Synonyms | Description | Size in memory (bytes) | Possible values |
 |------|----------|-------------|------------------------|-----------------|
-| `char` | N/A | A small whole number | 1 <= **Sc** | either $[-2^{Sc-1} ... 2^{Sc-1}-1]$ or $0 ... 2^{Sc}-1$ - **it depends on the environment** |
-| `signed char` | N/A | A small signed whole number | 1 <= **Sc** | always $[-2^{Sc-1} ... 2^{Sc-1}-1]$ |
-| `unsigned char` | N/A | A small unsigned (positive) whole number | 1 <= **Sc** | always $0 ... 2^{Sc}-1$ |
+| `char` | N/A | A small whole number | 1 <= **Sc** | either $[-2^{Sc-1} ... 2^{Sc-1}-1]$ or $[ 0 ... 2^{Sc}-1 ]$ - **it depends on the environment** |
+| `signed char` | N/A | A small signed whole number | 1 <= **Sc** | always $[ -2^{Sc-1} ... 2^{Sc-1}-1 ]$ |
+| `unsigned char` | N/A | A small unsigned (positive) whole number | 1 <= **Sc** | always $[ 0 ... 2^{Sc}-1 ]$ |
 | `short` | `signed short` | A smallish whole number | 2 <= **Ss** | $[-2^{Ss-1} ... 2^{Ss-1}-1]$ |
 | `unsigned short` | N/A | A smallish positive whole number | 2 <= **Ss** | $[0 ... 2^{Ss}-1]$ |
 | `int` | `signed int` | A whole number | 2 <= **Si** | $[-2^{Si-1} ... 2^{Si-1}-1]$ |
@@ -1768,6 +1768,18 @@ Guarantee: **Sc <= Ss <= Si <= Sl <= Sll**
 Some C implementations also provide "`long double`" but this is non-standard.
 
 For more information about floating-point numbers: http://liv.science.uva.nl/dfp.html
+
+Which type should you use in your own programs?
+
+- if you need a whole number: use `int`, unless you have a good reason to use something else.
+- if you need a floating-point number: use `double`, unless you have a good reason to use `float`.
+- if you need a character: use `int`, except when you need an array of characters, then use `char`.
+
+Side question: why does C provide so many types if one only needs
+`int`, `char` and `double` in most programs? That's because these
+options give control to the programmer over memory usage and
+performance. Once you start caring about memory usage and performance,
+you can start thinking about this again. (note: not in this course.)
 
 Composite types
 ---------------
@@ -1809,6 +1821,10 @@ Here are some of the standard additional types predefined for you with `typedef`
 | `uintptr_t` | A positive whole number of size at least as large as `sizeof(void*)` | (depends) | (depends) |
 | `intmax_t` | A whole number of the maximum supported size | (depends) | (depends) |
 | `uintmax_t` | A positive whole number of the maximum supported size | (depends) | (depends) |
+
+When are these useful? In this course, probably never. In the course
+"operating systems", perhaps once or twice. If you use C
+professionally, surely.
 
 Array types
 -----------
@@ -1937,8 +1953,7 @@ int main() {
 }
 ~~~
 
-Pseudo `string` type
---------------------
+### Pseudo `string` type
 
 Of course the `string` type does not really exist in C.
 
@@ -2020,10 +2035,197 @@ int main() {
 
 The names used inside the `enum` declaration are called *enumeration constants*.
 
-Aggregate types: structures and unions
---------------------------------------
+Aggregate types: structures
+---------------------------
 
-We'll see this shortly.
+A *structure type* allows you to **logically group multiple variables together.**
 
+Think about a "class" in Java or Python to do something similar.
+
+Why does this matter? Often an application will represent one thing
+using multiple variable. For example a person can have a name, an age,
+a gender, an address. If you have more than one persons, you need more
+variables. Structure types can help organize the code and make it more
+readable.
+
+So how does this work?
+
+### Structure definitions
+
+You define a new structure type like this: `struct {  fields...  }`
+
+Some examples:
+
+~~~c
+// This defines an anonymous struct. Not very useful.
+struct {
+  char*   name;
+  int     age;
+  char*   address;
+};
+
+// This defines a struct with a name.
+struct person {
+  char*   name;
+  int     age;
+  char*   address;
+};
+
+// This creates two "objects" with type "struct person".
+// The word "struct" is mandatory.
+struct person joe = { "joe", 34, "33 elm street" };
+struct person jane = { "jane", 23, "1 circle lane" };
+
+// This gives a short name to the struct.
+typedef struct person person_t;
+
+// Now we can use the short name.
+person_t mark = { "mark", 18, "1 circle lane" };
+person_t penelope = { "penelope", 44, "123 61st st"};
+~~~
+
+What's going on?
+
+- Inside "`struct { ... }`" you declare the *members* of the struct.
+- The name after the word "`struct`" becomes the name of the
+  struct. That name must always be used in combination with "`struct`",
+  like "`struct person`", "`struct stack`", etc.
+- You can also make a short name with: `typedef struct structname shortname;`
+
+Some oddities:
+
+- You can define a short name without a struct name: `typedef struct { ... } shortname;`
+- You can define a struct at the same time as one or more variables of its type: `struct person { ... } joe, jane, mark, penelope;`
+
+### Accessing a member of a struct in expressions
+
+For example:
+
+~~~c
+// Define a struct to represent a person.
+struct person {
+  char*   name;
+  int     age;
+  char*   address;
+};
+// Make a short name.
+typedef struct person person_t;
+
+int age_difference(person_t someone, person_t someone_else) {
+
+   // New syntax: x.y
+   int diff = someone.age - someone_else.age;
+   
+   if (diff < 0)
+      diff = -diff;
+   return diff;
+}	  
+~~~
+
+General syntax: **if `x` is an object of struct type, then the expression `x.a` accesses the member `a` of `x`.**
+
+Another example:
+
+~~~c
+int main() {
+  person_t joe;
+  joe.name = "joe";
+  joe.age = 34;
+  joe.address = "33 elm street";
+  printf("name: %s, age: %d, addr: %s\n", joe.name, joe.age, joe.address);
+  return 0;
+}
+~~~
+
+### Accessing a member of a struct via a reference
+
+Say you want to make a function that updates a person record to
+indicate that person has moved to a new address. The following works (with [easy.h](easy.h)):
+
+~~~c
+void move_to(ref_to(person_t) someone, string new_address) {
+   printf("person %s moving from %s to %s\n",
+      deref(someone).name,
+      deref(someone).address,
+      new_address);
+   deref(someone).address = new_address;
+}
+~~~
+
+Now, it just so happens that this kind of code is **very common**. So
+common, in fact, that the designers of C found it was a good idea to
+provide a *shorter syntax* to write **equivalent but shorter code**:
+
+~~~c
+void move_to(ref_to(person_t) someone, string new_address) {
+   printf("person %s moving from %s to %s\n",
+      someone->name,
+      someone->address,
+      new_address);
+   someone->address = new_address;
+}
+~~~
+
+General definition:
+
+- **if `x` is a reference to a struct, then the expression `x->a` accesses the member `a` of the referenced struct.**
+- (More general): **the syntax "`a->b`" is always strictly equivalent to "`deref(a).b`" (or "`(*a).b`").**
+
+### Size of a struct in memory
+
+The size of a struct (e.g. `struct person`) can be computed as usual with `sizeof`: `sizeof(struct person)`
+
+Can you predict the size of a struct? Usually, but not always
+accurately. Rule of thumb: **the size of a struct is the sum of the
+sizes of its members, plus an epsilon.**
+
+(It is not exactly the sum of the size of the members, because of
+[alignment issues](https://en.wikipedia.org/wiki/Data_structure_alignment). Not
+important for this course.)
+
+Aggregate types: unions
+-----------------------
+
+The idea of *union types* in C is an example of an
+*[atavism](https://en.wikipedia.org/wiki/Atavism)*: a primitive
+feature that has become rather useless or inconvenient but not yet
+weeded out by evolution.
+
+Unfortunately you have to understand them, and even more unfortunately
+perhaps use them, but know that virtually every language since C has
+done them better.  Eventually you will realize that C's unions are a
+degenerate, under-equipped ancestor of the much more useful, widely acclaimed
+[sum types](https://en.wikipedia.org/wiki/Algebraic_data_type), also
+called
+[tagged union or variant in some languages](https://en.wikipedia.org/wiki/Tagged_union).
+
+So, where does this leave us?
+
+General rule: **the C compiler handles `union` more or less in the same
+way as `struct`, except that all the members overlap in memory.**
+
+In effect:
+
+- to define a `union` use the same syntax as `struct`, just replace the keyword:
+  - anonymous union: `union { int a; int b; }`
+  - named union: `union blah { int a; int b; }`
+  - short name: `typedef union blah blih;`
+- make variables again by replacing the keyword: `union blah myvar;`
+- access members: `myvar.a`
+- access members over a reference: `deref(myvar).a` or `myvar->a`
+
+What's the difference then?
+
+1. **all the members of an union object start at the same place in memory.**
+2. **the size of an union is the size of its largest member.**
+
+When do you need to use a `union`? Not applicable in this course (I think).
+
+Next topics
+===========
+
+- references, pointers and address computations (generalized arrays)
+- linkage, storage and lifetimes
+- declarators
 
 <!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
