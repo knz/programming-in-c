@@ -1805,6 +1805,8 @@ Here are *all the composite types*:
 - all the *union types* (see below);
 - all the *enumeration types* (see below).
 
+**Never forget: http://cdecl.org/**
+
 Here are some of the standard additional types predefined for you with `typedef` in `stdint.h`:
 
 | Name | Description | Size in memory (bytes) | Possible values |
@@ -1953,6 +1955,14 @@ int main() {
 }
 ~~~
 
+Some exercises:
+
+
+**poll: progcc**
+[poll link](https://iqpolls.com/vote/progcc) - 
+[poll results](http://iqpolls.com/p/1faaf3dcd9fa1668096b7162/533f9da4f5ccef693ce6eac4)
+
+
 ### Pseudo `string` type
 
 Of course the `string` type does not really exist in C.
@@ -1984,6 +1994,13 @@ int main() {
 }
 ~~~
 
+Some exercises:
+
+**poll: progcd**
+[poll link](https://iqpolls.com/vote/progcd) - 
+[poll results](http://iqpolls.com/p/ede7f0fb566f0a26270ab4a6/e5b552bf9643665e13ec7752)
+
+
 ### Commutativity of addition
 
 Remember, `a + b == b + a`?
@@ -2000,11 +2017,26 @@ What does this program do?
 
 ~~~c
 int main() {
-  printf("hello %c!", 1["world"]);
+  printf("hello %c!\n", 1["world"]);
   return 0;
 }
 ~~~
 
+**poll: progcb**
+[poll link](https://iqpolls.com/vote/progcb) - 
+[poll results](http://iqpolls.com/p/9be5c829751c46b2015ac7b2/a29fab3db5f850a2038e6379)
+
+
+### Summary
+
+- Arrays have 4 weird rules, **you must learn them separately**:
+  1. expression with "array type" evaluates to reference to first element
+  2. a reference is a valid argument for a function that wants an array
+  3. `a[b]` equivalent to `deref(a+b)` (`*(a+b)`)
+  4. if  `a` is a reference to an array element, `a+N` is a reference to the Nth element further
+- `string` is actually `ref_to(char)` (`char*`)
+- `a[b] == *(a+b) == *(b+a) == b[a]` (this is weird!)
+  
 Enumeration types
 -----------------
 
@@ -2032,6 +2064,14 @@ int main() {
    return x + y + z; // valid: they are just numbers.
 }
 ~~~
+
+Bonus question: what does the program above print?
+
+
+**poll: progce**
+[poll link](https://iqpolls.com/vote/progce) - 
+[poll results](http://iqpolls.com/p/2f752b5f9799112b108af61d/361e103c62cbbe53217d1592)
+
 
 The names used inside the `enum` declaration are called *enumeration constants*.
 
@@ -2183,6 +2223,12 @@ sizes of its members, plus an epsilon.**
 [alignment issues](https://en.wikipedia.org/wiki/Data_structure_alignment). Not
 important for this course.)
 
+### Summary
+
+- structures defined with `struct { ... }`
+- structures can be anonymous; they can have a "long name" or "struct name" (`struct blah`), or they can have a short name with `typedef`
+- size of struct is sum of sizes of members + epsilon
+
 Aggregate types: unions
 -----------------------
 
@@ -2221,11 +2267,333 @@ What's the difference then?
 
 When do you need to use a `union`? Not applicable in this course (I think).
 
+Objects that outlive functions
+==============================
+
+Remember what we said about variables in functions:
+
+~~~c
+int square(int x) {  // this is a first variable "x"
+   x = x * x;
+   return x;
+}
+
+int main() {
+   int x = 2;     // this is a different variable "x"!
+   x = square(x);
+   return x;
+}
+~~~
+
+Each variable defined in a function **only exists during the execution of that function** -- it stops to exist when the function returns.
+
+References to local variables
+-----------------------------
+
+Knowing this, what do you think about this:
+
+~~~c
+ref_to(int) square(int x) {
+   int result = x * x;
+   return ref(result);
+}
+
+int main() {
+   ref_to(int) x = square(2);
+   printf("hello %d\n", deref(x));
+   return 0;
+}
+~~~
+
+**poll: progcf**
+[poll link](https://iqpolls.com/vote/progcf) - 
+[poll results](http://iqpolls.com/p/22aef58037a75a756f164917/dda35da6c8ebecd278d1f11b)
+
+![Don't return references to local variables!](ref-local-var.jpg)
+
+Making objects that outlive functions
+-------------------------------------
+
+Say, you really want to create a new variable in a function so that
+the caller can still use it after the function returns.
+
+For this you need to **allocate the object on the heap**.
+
+The heap is a memory space that is separate from the function-local variables, and
+**where objects exist until your program explicitly destroys (frees) them.**
+
+How to do this? Like this:
+
+~~~c
+#include <stdlib.h>
+ref_to(int) square(int x) {
+
+   // This makes an object on the heap and creates
+   // a (local) reference to it.
+   ref_to(int) result = malloc(sizeof(int));
+
+   // This writes the result in the new object (on the heap).
+   deref(result) = x * x;
+
+   // This is now valid:
+   return ref(result);
+}
+
+int main() {
+   ref_to(int) x = square(2);
+
+   // This prints "hello 4".
+   printf("hello %d\n", deref(x));
+   return 0;
+}
+~~~
+
+We are using the function `malloc()` defined like this:
+
+~~~c
+// malloc returns a reference to an object of the specified size.
+void* malloc(int);
+~~~
+
+Make sure to **give the right allocation size to malloc** -- the C compiler will not check this for you.
+
+For example:
+
+~~~c
+#include <stdlib.h>
+int main() {
+   ref_to(int) x = malloc(1);
+   deref(x) = 2;
+   return deref(x);
+}
+~~~
+
+What does this program return?
+
+**poll: progcg**
+[poll link](https://iqpolls.com/vote/progcg) -
+[poll results](http://iqpolls.com/p/4137822488d783cccc9d25d3/c93e6d097c61f5456906561b)
+
+![Don't make objects too small with malloc!](inv-heap-loc.jpg)
+
+Releasing objects
+-----------------
+
+All objects allocated by `malloc` **remain in the heap until your program gets rid of them.**
+
+How? With this:
+
+~~~c
+// The function free releases the object pointed to by the reference given as argument.
+void free(void*);
+~~~
+
+So this is correct:
+
+~~~c
+#include <stdlib.h>
+ref_to(int) square(int x) {
+
+   // This makes an object on the heap and creates
+   // a (local) reference to it.
+   ref_to(int) result = malloc(sizeof(int));
+
+   // This writes the result in the new object (on the heap).
+   deref(result) = x * x;
+
+   // This is now valid:
+   return ref(result);
+}
+
+int main() {
+   ref_to(int) x = square(2);
+
+   // This prints "hello 4".
+   printf("hello %d\n", deref(x));
+
+   // Release the object allocated by square.
+   free(x);
+
+   return 0;
+}
+~~~
+
+Ok and then what about this?
+
+~~~c
+#include <stdlib.h>
+int main() {
+   ref_to(int) x = malloc(sizeof(int));
+   deref(x) = 2;
+   free(x);
+   printf("hello %d\n", deref(x));
+   return 0;
+}
+~~~
+
+**poll: progch**
+[poll link](https://iqpolls.com/vote/progch) -
+[poll results](http://iqpolls.com/p/d22a02bd7d46d5fd7557a4be/36e164042ffdad61576b0b65)
+
+![Don't use objects after free()!](use-after-free.jpg)
+
+Note: same concern with:
+
+~~~c
+int main() {
+   int *c = malloc(...)
+   free(c);
+   free(c); // this is also a use after free.
+   return 0;
+~~~
+
+What about arrays on the heap
+-----------------------------
+
+An array is just an object. You can also make an array on the heap!
+
+~~~c
+int main() {
+
+   // The following allocates an array of 10 ints on the heap.
+   int *p = malloc(10 * sizeof(int));
+
+   p[3] = 42;  // valid
+   p[0] = 123; // valid
+   p[10] = 3;  // hmmm (poor kittens!)
+
+   ...
+
+   free(p); // ok
+   return 0;
+}
+~~~
+
+What's going on? We have declared `p` to be "reference to one int"
+even though we are allocating an *array*.
+
+Why is that?  **It is relatively hard to properly write the type
+"reference to an array" in C, so that it has become customary to use
+"reference to the first element" instead.**
+
+And yet it does not matter much, because the array rules (see
+above) make the syntax `p[N]` valid nevertheless.
+
+If you are curious, here is how one would use the full "reference to
+an array" notation in C (this is valid but remember, nearly nobody
+does this in practice):
+
+~~~c
+int main() {
+  int (*p)[10] = malloc(10 * sizeof(int));
+
+   (*p)[3] = 42;  // valid
+   (*p)[0] = 123; // valid
+   p[3] = 42;     // compile error (hopefully), dead kitten (sometimes)
+
+   free(p); // ok
+}
+~~~
+
+Allocation failures
+-------------------
+
+Try this:
+
+~~~c
+#include <stdlib.h>
+int main() {
+   int *p = malloc(60*1024*1024*1024*sizeof(int));
+   for (i = 0; i < 60*1024*1024*1024; i++) {
+     p[i] = 123;
+   }
+   printf("%d\n", p[100]);	 
+   free(p);
+   return 0;
+}
+~~~
+
+What does this print?
+
+**poll: progci**
+[poll link](https://iqpolls.com/vote/progci) -
+[poll results](http://iqpolls.com/p/c9645b3a5ad6083b0c9bd5a5/ec674da92fac1365142d9268)
+
+What's going on?
+
+If `malloc()` fails because "not enough memory", it will return a
+special reference value called a "null reference".  This reference
+always compares true to numeric zero. You program needs to check this!
+
+![Don't access objects via null references!](null-ref.jpg)
+
+This is correct:
+
+~~~c
+#include <stdlib.h>
+int main() {
+   int *p = malloc(60*1024*1024*1024*sizeof(int));
+   if (p == 0) {
+     printf("wooops\n");
+     return 1;
+   }
+   for (i = 0; i < 60*1024*1024*1024; i++) {
+     p[i] = 123;
+   }
+   printf("%d\n", p[100]);	 
+   free(p);
+   return 0;
+}
+~~~
+
+Bonus exercise:
+
+~~~c
+#include <stdlib.h>
+int main() {
+   int *p = malloc(60*1024*1024*1024*sizeof(int));
+   if (p = 0) {
+     printf("wooops\n");
+     return 1;
+   }
+   p[100] = 123;
+   printf("%d\n", p[100]);	 
+   free(p);
+   return 0;
+}
+~~~
+
+**poll: progcj**
+[poll link](https://iqpolls.com/vote/progcj) -
+[poll results](http://iqpolls.com/p/18759a1b00983abe53ac2007/a3bd2a37a01c0f0d696baa1a)
+
+What's going on?
+
+~~~c
+   if (p = 0) // <--- look at this closer!
+~~~
+
+Note: it is often prudent to write `0 == p` instead of `p == 0` to
+protect against these mistakes: `0 = p` is guaranteed to generate a compile
+error.
+
+Summary
+-------
+
+- don't use function-local variables after they stop to exist (via a reference)!
+- allocate objects on the heap with `malloc()`
+  - compute the size to allocate with `sizeof`
+- release objects from the heap with `free()`
+  - don't use objects after `free()`!!
+- allocate arrays with `malloc(N * sizeof(T))` with N number of elements, T type of 1 element. 
+
 Next topics
 ===========
 
-- references, pointers and address computations (generalized arrays)
+- switch, goto
 - linkage, storage and lifetimes
 - declarators
+
+
 
 <!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
