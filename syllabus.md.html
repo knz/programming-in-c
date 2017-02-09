@@ -2504,7 +2504,7 @@ Try this:
 #include <stdlib.h>
 int main() {
    int *p = malloc(60*1024*1024*1024*sizeof(int));
-   for (i = 0; i < 60*1024*1024*1024; i++) {
+   for (int i = 0; i < 60*1024*1024*1024; i++) {
      p[i] = 123;
    }
    printf("%d\n", p[100]);	 
