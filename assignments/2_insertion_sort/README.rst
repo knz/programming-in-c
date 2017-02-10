@@ -23,7 +23,7 @@ and maintaining this order while reading the input (insertion sort).
 
 You must submit your work as a tarball [#]_. Next to the source code,
 your archive must contain a text file file named “``AUTHORS``”
-containing your name and Student ID(s).
+containing your name and Student ID.
 
 .. [#] http://lmgtfy.com/?q=how+to+make+a+tarball
 
@@ -40,7 +40,7 @@ Getting started
 4. Implement the data structure in ``list.c``.
 
 5. Implement the input and insertion sort algorithm in
-   ``mysort.c``.
+   ``main.c``.
 
    You can use e.g. ``du ~ | awk {print $1} | ./mysort`` to test your
    work.
@@ -51,7 +51,7 @@ Grading
 Your grade starts from 0, and the following tests determine your grade:
 
 - +0,5pt if you have submitted an archive in the right format with an ``AUTHORS`` file.
-- +0,5pt if your source code builds without errors and you have modified ``list.c`` or ``mysort.c`` in any way.
+- +0,5pt if your source code builds without errors and you have modified ``list.c`` or ``main.c`` in any way.
 - +2pt if your list API processes insertions and removals properly.
 - +3pt if your ``mysort`` processes and sorts its input properly and terminates with exit code 0.
 - -0,5pt if your program misbehaves on zero-sized inputs.
