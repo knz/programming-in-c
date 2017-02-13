@@ -320,6 +320,7 @@ What does this program do?
 ~~~c
 int main() {
   printf("hello %d\n", 'i');
+  return 0;
 }
 ~~~
 
@@ -340,6 +341,7 @@ What does this program do?
 ~~~c
 int main() {
   printf("hello %c\n", 105);
+  return 0;
 }
 ~~~
 
@@ -361,6 +363,7 @@ The following three programs print **the same thing**:
 ~~~c
 int main() {
   printf("hello %c\n", 105);
+  return 0;
 }
 ~~~
 
@@ -368,12 +371,14 @@ int main() {
 int main() {
   int  mychar = 'i';
   printf("hello %c\n", mychar);
+  return 0;
 }
 ~~~
 
 ~~~c
 int main() {
   printf("hello %c\n", 'i');
+  return 0;
 }
 ~~~
 
@@ -466,7 +471,8 @@ Let's try it out:
 ~~~c
 #include <stdio.h>
 int main(int argc, string argv[]) {
-   printf("%d\n", argc);
+  printf("%d\n", argc);
+  return 0;
 }
 ~~~
 
@@ -494,7 +500,8 @@ Let's try out some more:
 ~~~c
 #include <stdio.h>
 int main(int argc, string argv[]) {
-   printf("%s\n", argv[0]);
+  printf("%s\n", argv[0]);
+  return 0;
 }
 ~~~
 
@@ -535,7 +542,8 @@ So what is in `argv` in the 2nd position? Let's find out.
 ~~~c
 #include <stdio.h>
 int main(int argc, string argv[]) {
-   printf("%s\n", argv[1]);
+  printf("%s\n", argv[1]);
+  return 0;
 }
 ~~~
 
@@ -675,6 +683,7 @@ int main(int argc, string argv[]) {
 
    // Do stuff.
    printf("%d\n", atoi(argv[1]) + atoi(argv[2]));
+   return 0;
 }
 ~~~
 
@@ -702,6 +711,7 @@ int main(int argc, string argv[]) {
    int a = atoi(argv[1]);
    int b = atoi(argv[2]);
    printf("%d\n", a + b);
+   return 0;
 }
 ~~~
 
@@ -1164,7 +1174,7 @@ Quiz: what does the following program print?
 int main() {
    int c = "hello"['f'-'e'];
    printf("%d\n", c - 1);
-   return 0
+   return 0;
 }
 ~~~
 
@@ -1500,7 +1510,7 @@ int main() {
   int a = 42, b = 69;
   printf("%d %d ", a++, ++b);
   printf("%d %d\n", a, b);
-  return 0
+  return 0;
 }
 ~~~
 
@@ -1575,6 +1585,7 @@ int main() {
    int a;
    return a;
    a = 42;
+   return 0;
 }
 ~~~
 
@@ -2445,6 +2456,7 @@ int main() {
    free(c);
    free(c); // this is also a use after free.
    return 0;
+}
 ~~~
 
 What about arrays on the heap
@@ -2492,6 +2504,7 @@ int main() {
    p[3] = 42;     // compile error (hopefully), dead kitten (sometimes)
 
    free(p); // ok
+   return 0;
 }
 ~~~
 
@@ -2587,11 +2600,1070 @@ Summary
   - don't use objects after `free()`!!
 - allocate arrays with `malloc(N * sizeof(T))` with N number of elements, T type of 1 element. 
 
+Control structures (advanced)
+=============================
+
+First look at `switch`
+----------------------
+
+Say you want to write a function that computes the English language
+ordinal suffix: "st", "nd", "rd" or "th" dependong on which number is
+given as input.
+
+With `if` it's easy enough:
+
+~~~c
+if (number == 1)
+  return "th";
+else if (number == 2)
+  return "nd";
+else if (number == 3)
+  return "rd";
+else
+  return "th";
+~~~
+
+This pattern with a lot of `if` branches that test a single variable
+can be simplified to the following:
+
+~~~c
+switch(number) {
+  case 1:
+    return "st";
+    break;
+  case 2:
+    return "nd";
+    break;
+  case 3:
+    return "rd";
+    break;
+  default:
+    return "th";
+    break;
+}
+~~~
+
+**This is the most common usage pattern of `switch`.**
+
+The general syntax for this pattern is:
+
+~~~
+switch (<variable>) {
+   case <const1>: <action1>; break;
+   case <const2>: <action2>; break;
+   case <const2>: <action2>; break;
+   ...
+  [ default: <action>; break; ]
+}
+~~~
+
+If you need to use the same action for multiple constants, this is possible by simply using multiple `case` labels for the same action.
+
+For example:
+
+~~~
+switch (<variable>) {
+  case <const1>:
+  case <const2>: <common action>; break;
+
+  case <const3>:
+  case <const4>:
+  case <const5>: <common action>; break;
+
+  ...
+}
+~~~
+
+Control flow viewed as graphs
+-----------------------------
+
+The most general way to think about control flow in C is to chop the
+program in *basic blocks*: the longest sub-sequences of statements
+that are always executed together. Then visualize the control flow as
+a graph where the basic blocks are nodes and the *possible* control
+flow branches represented as edges.
+
+For example, the following function has just one basic block:
+
+~~~c
+int foo(int x) {
+  // The following three things are always executed together.
+  int y = x + 2;
+  printf("y = %d\n", y);
+  return x + y;
+}
+~~~
+
+The following function has three basic blocks:
+
+~~~c
+int foo(int x) {
+  int y = x + 2;
+  if (y > 3) {
+    return 42;
+  
+  return x;
+}
+~~~
+
+The three basic blocks are:
+
+A) "`int y = x + 2; int t = y > 3`" (the condition for the `if` is evaluated at the end of the first basic block).
+
+B) "`return 42;`"
+
+C) "`return x;`"
+
+Then we can represent this control flow as follows:
+
+*********************
+*      A   .*.      *
+*         /   \     *
+*        v     v    *
+*     B  o     o C  *
+*********************
+
+If you remember from earlier, the program that reads from the standard input until it receives EOF:
+
+~~~c
+#include <stdio.h>
+int main() {
+   while(1) {
+     // Read a character code.
+     int c = getchar();
+     
+     // Was this the end of input?
+     if (EOF == c) {
+       return 0;
+     }
+
+     // No, print the character.
+     printf("hello %c\n", c);
+   }
+   return 0;
+}
+~~~
+
+This contains the following basic blocks:
+
+A) evaluate `1`
+
+B) read one character, test whether it is `EOF`.
+
+C) return 0.
+
+D) print the character.
+
+E) return 0 (the 2nd time).
+
+This can be represented as follows:
+
+*******************************
+*     A *----.                *
+*       ^     |               *
+*       |     v               *
+*       |   B o-->* C         *
+*       |     |               *
+*       |     v               *
+*       |     o D             *
+*       |     |               *
+*        '---'                *
+*                             *
+*       * E (unreachable)     *
+*******************************
+
+In general, **a loop in a program is equivalent to a control flow graph (CFG) with a cycle.**
+
+Each of the control flow structures in C has its own general, reusable
+control flow structure:
+
+~~~c
+a;
+if (b) c;
+d;
+~~~
+
+***************
+*    o  a     *
+*    |        *
+*    v        *
+*  b o---.    *
+*    |    |   *
+*    |    v   *
+*    |    o c *
+*    v    |   *
+*  d o<--'    *
+***************
+
+~~~c
+a;
+if (b) c; else d;
+e;
+~~~
+
+***************
+*    o  a     *
+*    |        *
+*    v        *
+*  b o---.    *
+*    |    |   *
+*    v    v   *
+* c  o    o d *
+*    |    |   *
+*    v    |   *
+*  e o<--'    *
+***************
+
+~~~c
+a;
+while (b) c;
+d;
+~~~
+
+*******************************
+*       o  a                  *
+*       |                     *
+*     b v                     *
+*   .---o----.                *
+*   |   ^     |               *
+*   |   |     v               *
+*   |   |     o c             *
+*   |   |     |               *
+*   |    '---'                *
+*   v                         *
+*   o d                       *
+*******************************
+
+~~~c
+a;
+do b; while (c);
+d;
+~~~
+
+********************
+*       o  a       *
+*       |          *
+*       v          *
+*     b o<---.     *
+*       |     |    *
+*       v     |    *
+*     c o----'     *
+*       |          *
+*       v          *
+*       o d        *
+********************
+
+Intro to `continue` and `break` via the CFG
+-------------------------------------------
+
+The special statement `continue` short-circuits the current loop (the
+innermost loop where it appears) back to the evaluation of the
+condition.
+
+~~~c
+a;
+while (b) { c; continue; d; }
+e;
+~~~
+
+*********************************
+*       o  a                    *
+*       |                       *
+*     b v                       *
+*   .---o----.                  *
+*   |   ^     |                 *
+*   |   |     v                 *
+*   |   |'----o c               *
+*   |   |                       *
+*   |    '----o d (unreachable) *
+*   v                           *
+*   o e                         *
+*********************************
+
+~~~c
+a;
+while (b) { c; if (d) continue; e; }
+f;
+~~~
+
+*********************************
+*       o  a                    *
+*       |                       *
+*     b v                       *
+*   .---o----.                  *
+*   |   ^     |                 *
+*   |   |     v                 *
+*   |   |     o c               *
+*   |   |     |                 *
+*   |   |     v                 *
+*   |   |'----o d               *
+*   |   |     |                 *
+*   |   |     v                 *
+*   |    '----o e               *
+*   v                           *
+*   o f                         *
+*********************************
+
+~~~c
+a;
+while (b) { c; break; d }
+e;
+~~~
+
+*********************************
+*       o  a                    *
+*       |                       *
+*     b v                       *
+*   .---o----.                  *
+*   |   ^     |                 *
+*   |   |     v                 *
+*   |   |   c o-----.           *
+*   |   |            |          *
+*   |   |            |          *
+*   |    '----o d    |          *
+*   v                |          *
+* h o<--------------'           *
+*********************************
+
+~~~c
+a;
+while (b) { c; if (d) break; e; }
+f;
+~~~
+
+*********************************
+*       o  a                    *
+*       |                       *
+*     b v                       *
+*   .---o----.                  *
+*   |   ^     |                 *
+*   |   |     v                 *
+*   |   |   c o                 *
+*   |   |     |                 *
+*   |   |     v                 *
+*   |   |   d o-----.           *
+*   |   |     |      |          *
+*   |   |     v      |          *
+*   |    '----o e    |          *
+*   v                |          *
+* f o<--------------'           *
+*********************************
+
+`for` and its CFG
+-----------------
+
+Remember, a `for` loop is a `while` loop in disguise.
+
+~~~c
+a;
+for (b; c; d) e;
+f;
+~~~
+
+*******************************
+*       o  a                  *
+*       |                     *
+*       v                     *
+*       o  b                  *
+*       |                     *
+*     c v                     *
+*   .---o----.                *
+*   |   ^     |               *
+*   |   |     v               *
+*   |   o d   o e             *
+*   |   ^     |               *
+*   |   |     |               *
+*   |    '---'                *
+*   v                         *
+*   o f                       *
+*******************************
+
+~~~c
+a;
+for (b; c; d) { e; if (f) continue; g; }
+h;
+~~~
+
+*********************************
+*       o  a                    *
+*       |                       *
+*       v                       *
+*       o  b                    *
+*       |                       *
+*     c v                       *
+*   .---o----.                  *
+*   |   ^     |                 *
+*   |   |     v                 *
+*   |   o d   o e               *
+*   |   ^     |                 *
+*   |   |     |                 *
+*   |   |'----o f               *
+*   |   |     |                 *
+*   |   |     v                 *
+*   |    '----o g               *
+*   v                           *
+* h o                           *
+*********************************
+
+**Note: after `continue` in `for`, the loop increment (the `d` block) is still executed!**
+
+
+~~~c
+a;
+for (b; c; d) { e; if (f) break; g; }
+h;
+~~~
+
+*********************************
+*       o  a                    *
+*       |                       *
+*       v                       *
+*       o  b                    *
+*       |                       *
+*     c v                       *
+*   .---o----.                  *
+*   |   ^     |                 *
+*   |   |     v                 *
+*   |   o d   o e               *
+*   |   ^     |                 *
+*   |   |   f o-----.           *
+*   |   |     |      |          *
+*   |   |     v      |          *
+*   |    '----o g    |          *
+*   v                |          *
+* h o<--------------'           *
+*********************************
+
+Constructing arbitrary CFGs
+---------------------------
+
+The control structures have fixed CFG patterns.
+
+Meanwhile it is possible to construct *arbitrarily complex* CFGs using the `goto` statement.
+
+Think about `goto` like a tool that allows you to draw arbitrary edges
+in the control flow graph.
+
+For example, take the `while` loop from above:
+
+~~~c
+a;
+while (b) c;
+d;
+~~~
+
+*******************************
+*       o  a                  *
+*       |                     *
+*     b v                     *
+*   .---o----.                *
+*   |   ^     |               *
+*   |   |     v               *
+*   |   |     o c             *
+*   |   |     |               *
+*   |    '---'                *
+*   v                         *
+*   o d                       *
+*******************************
+
+Now suppose you want to add a new condition on some expression `e` after the basic block `c`, which
+flows back to the basic block `a`. That is, you want as end result the following:
+
+*******************************
+*     a o<---------.          *
+*       |           |         *
+*     b v           |         *
+*   .---o----.      |         *
+*   |   ^     |     |         *
+*   |   |     v     |         *
+*   |   |     o c   |         *
+*   |   |     |     |         *
+*   |   |     v     |         *
+*   |   |   d o----'          *
+*   |   |     |               *
+*   |    '---'                *
+*   v                         *
+*   o d                       *
+*******************************
+
+Be as it may, there is no standard control structure in C which allows you to reach this result.
+That's when `goto` can be applied:
+
+~~~c
+YOURLABEL:
+ a;
+ while (b) { c; if (d) goto YOURLABEL; }
+ d;
+~~~
+
+The way it works is as follows:
+
+- you define a *label* where you want the control flow edge to *arrive*;
+- you use `goto` whenever you want to create a control flow edge that *departs* from the current location towards the label.
+
+**Note: using `goto` in C is (usually) considered Very Bad Style. People will hate you for it, because it makes the code more complex to understand.**
+
+![goto is very bad style!](goto-nope.jpg)
+
+However it is handy to learn about it now, because the next section becomes much easier to understand once you understand `goto`.
+
+`switch` and its CFG
+--------------------
+
+Consider the following code:
+
+~~~c
+void duff(int to[], int from[], int count) {
+ int n = (count + 3) / 4;
+ int i = 0;
+ switch (count % 4) {
+    case 0: do { to[i] = from[i]; i++;
+    case 3:      to[i] = from[i]; i++;
+    case 2:      to[i] = from[i]; i++;
+    case 1:      to[i] = from[i]; i++;
+            } while (--n > 0);
+  }
+}
+~~~
+
+Is this correct C code?
+
+**poll: progck**
+[poll link](https://iqpolls.com/vote/progck) -
+[poll results](http://iqpolls.com/p/e91ffca93526a6ab7a7074bb/645b1a5a3103a5138d7728de)
+
+Reference: https://en.wikipedia.org/wiki/Duff's_device
+
+![This looks suspicious...](fry.jpg)
+
+What's going on?
+
+Before explaining further, let's remove the unnecessary syntax and simplify down to the basic block structure:
+
+~~~c
+void duff() {
+ a;
+ switch (b) {
+    case 0: do { c;
+    case 3:      d;
+    case 2:      e;
+    case 1:      f;
+            } while (g);
+  }
+  h;
+}
+~~~
+
+***********************
+*     o a             *
+*     |               *
+*     v               *
+*   b o               *
+*     |               *
+*     |'----->o<--.   *
+*     |     c |    |  *
+*     |       v    |  *
+*     |'----->o    |  *
+*     |     d |    |  *
+*     |       v    |  *
+*     |'----->o    |  *
+*     |     e |    |  *
+*     |       v    |  *
+*      '----->o    |  *
+*           f |    |  *
+*             v    |  *
+*           g o---'   *
+*             |       *
+*   h o<-----'        *
+***********************
+
+What's going on?
+
+To understand this, you need to understand the *general behavior* of `switch`. Actually when you write a `switch` of the following form:
+
+~~~c
+a;
+switch (b) {
+case X:    c;
+case Y:    d;
+case Z:    e;
+}
+g;
+~~~
+
+What really gets compiled is something like this:
+
+~~~c
+a;
+
+// Conditional part with branching.
+if (b == X)      goto L1;
+else if (b == Y) goto L2;
+else if (b == Z) goto L3;
+goto Lend;
+
+// Rest of the code between { ... }
+L1: a;
+L2: b;
+L3: c;
+
+Lend: g;
+~~~
+
+Observation: there is no structural relationship between the `case`
+labels and the structure of the code inside `switch { ... }`
+
+- the `case` labels are translated to `if` conditions at the beginning, only labels remain;
+- the generated labels can appear at arbitrary positions in the `switch { ... }` block.
+
+If the code uses `default` case, this corresponds to an additional label, with an `else` branch at the beginning:
+
+~~~c
+a;
+switch (b) {
+case X:    c;
+case Y:    d;
+default:   e;
+}
+g;
+~~~
+
+Translates to:
+
+~~~c
+a;
+
+// Conditional part with branching.
+if (b == X)      goto L1;
+else if (b == Y) goto L2;
+else             goto L3; // notice "else" without condition (= default)
+goto Lend;
+
+// Rest of the code between { ... }
+L1: a;
+L2: b;
+L3: c;
+
+Lend: g;
+~~~
+
+Also, if you use `break` in `switch`, it's similar to when you use it in a loop: **`break` in `switch` exits to the first basic block after the `switch`.**
+
+It's like replacing "`break`" by "`goto Lend`" in the example above.
+
+Now let's come back to the strange thing above:
+
+~~~c
+void duff() {
+ a;
+ switch (b) {
+    case 0: do { c;
+    case 3:      d;
+    case 2:      e;
+    case 1:      f;
+            } while (g);
+  }
+  h;
+}
+~~~
+
+This is really equivalent to:
+
+~~~c
+void duff() {
+ a;
+ if (b == 0) goto L1;
+ else if (b == 3) goto L2;
+ else if (b == 2) goto L3;
+ else if (b == 1) goto L4;
+ goto Lend;
+
+L1:
+ do {
+   c;
+L2:
+   d;
+L3:
+   e:
+L4:
+   f;
+ } while (g);
+
+Lend:
+ h;
+}
+~~~
+
+Tada!
+
+![switch is full of goto in disguise!](goto-wow.jpg)
+
+Summary
+-------
+
+- imagine control structures as a way to draw a control flow graph (CFG).
+  - basic block: group of statements always executed together.
+- loops always cause cycles in CFGs.
+  - if you want a cycle in the CFG, chances are you want a loop in your code.
+- `continue` goes back to the cycle edge.
+  - includes the step expression in `for` loops!
+- `break` exits the loop to first basic block after the condition.
+  - in `switch` it exits the switch to the first basic block afterwards.
+- `switch` can be seen as a way to simplify a series of `if`s
+  - but really under the hood it's full of `goto`.
+- try very very very hard not to use `goto` directly.
+  - certainly you won't need it in this course.
+
+Objects and designators
+=======================
+
+This chapter is based on
+[ISO 9899:2011](https://en.wikipedia.org/wiki/C11_%28C_standard_revision%29)
+section 6.2, and “Semantics of C objects”, Appendix F of
+[“On the realizability of hardware microthreading”](http://hdl.handle.net/11245/1.377015)
+by yours truly.
+
+Objects in C
+------------
+
+All the *things* your program manipulates during its execution and
+that have a *value* and/or *address* are called **objects**.
+
+A "variable" is an object.
+
+A constant is an object.
+
+A function is an object.
+
+A type is *not* an object.
+
+An expression is an object.
+
+A control structure is *not* an object.
+
+Properties of objects:
+
+- its *address*, if it has one (not all objects have an address!)
+- its *addressability* — whether it has an address or not (e.g. the constant "`42`" in code is an object at run-time with no address)
+- its *mutability* — whether you can change its value or not
+- its *size* — number of `char`'s in its representation
+
+Storages and lifetimes
+----------------------
+
+Definitions:
+
+- **storage**: *where* an object exists in memory.
+- **lifetime**: *when* does an object exist (more precisely, *from when* and *until when* — i.e., the two boundaries of a segment of time).
+
+Fundamental semantics of C:
+
+1) **The storage of an object determines its lifetime.**
+
+2) **The properties of an object are fixed during its lifetime: its mutability, its addressability, its address (if it has one), its size.**
+
+There are just four storages in C:
+
+| Storage name | How you make it | Where the object lives | When the object appears | When the object dies | Initialization |
+|--------------|-----------------|------------------------|-------------------------|----------------------|----------------|
+| **auto**     | Local definition in function | On the stack or registers (usually) | When the declaration is reached during execution | When execution reaches the end of the block | None / initializer |
+| **alloc**    | `*alloc()`, `sbrk()`, `mmap()`, `tss_create()` | On the heap | When the allocation function runs | When you call `free()` or equivalent | None / by allocator |
+| **static**   | Global definition,<br/>or `static` definition *within* function | Data segment | When the program starts | When the program terminates | Once, before startup |
+| **thread**   | With `_Thread_local` | In the thread-local space (TLS) | When the thread starts | When the thread terminates | None / initializer |
+
+**Note: you can forget about thread storage for now.**
+You probably won't need it before your third year of study, or ever.
+
+Exercise: how many objects of each storage type in the following program?
+
+~~~c
+int a;
+int b(int c) {
+  int d = a;
+  return c+d;
+}
+~~~
+
+**poll: progcl**
+[poll link](https://iqpolls.com/vote/progcl) -
+[poll results](http://iqpolls.com/p/e2f7a1cfd3ed3c3a39341cde/bdb5c25d35a78c45055d6f04)
+
+What's going on?
+
+Don't forget: functions are objects too, expressions are objects too!
+
+What about the following:
+
+~~~c
+int a;
+extern int b;
+int c() {
+  static int d = a+b;
+  return d;
+}
+~~~
+
+**poll: progcl**
+[poll link](https://iqpolls.com/vote/progcl) -
+[poll results](http://iqpolls.com/p/e2f7a1cfd3ed3c3a39341cde/bdb5c25d35a78c45055d6f04)
+
+What's going on?
+
+Remember: `extern` makes a *declaration*, not a *definition*.
+
+Objects vs. designators
+-----------------------
+
+Definition:
+
+- an *object* is a *thing* (see above)
+- a **designator** is the *name* for a thing.
+
+There are two ways to "make" objects and designators in C:
+
+- **Declaration syntax** (e.g. "`int x;`")
+  - can be a **definition**: new designator *and* new object
+  - can be a **declaration**: *only* new designator
+- **Expressions** (e.g. "`3+2`", "`foo()`")
+  - these always have automatic storage.
+
+Fundamental semantics of C:
+
+1) **There may be one or more designators for an object, or none at all.**
+
+2) **Types are properties of designators, not of objects.**
+
+3) **Objects are just arrays of `char`.** You can use designators to access this array.
+
+### Multiple designators
+
+After:
+
+~~~c
+int x;
+int *p = &x;
+int* foo() { return &x; }
+~~~
+
+Then "`x`", "`*p`" and "`*foo()`" are all three designators for the
+same object (the object that was defined by "`int x;`").
+
+### No designators
+
+After:
+
+~~~c
+int * foo() {
+  int *p = malloc(sizeof(int)); // object 1 appears here
+
+  p = malloc(sizeof(int)); // object 2 appears here
+  return p;
+}
+~~~
+
+The expression "`*foo()`" is a designator for the 2nd object allocated
+by `malloc()`. The first object *still exists* but has *no
+designator*.
+
+**Note: once the last designator to an object is lost, there is no way
+to get it back. However, the object may still continue to exist.**
+(And take up memory!)
+
+Exercise: how many objects and how many designators does the following program make?
+
+~~~c
+int *foo() {
+  int *p;
+  for (int i = 0; i < 10; i++) {
+    p = malloc(sizeof(int));
+  }
+  return p;
+}
+~~~
+
+### Designators of different types for the same object
+
+After:
+
+~~~c
+int x;
+char *p = (char*) &x;
+void* foo() { return &x; }
+~~~
+
+Then "`x`", "`*p`" and "`*foo()`" are all three designators for the
+same object (the object that was defined by "`int x;`").
+
+However the designators have different types! That's OK.
+
+For example, the following program is very much valid:
+
+~~~c
+int main() {
+  int x = 123;
+  char *p = (char*) &x; // makes a 2nd designator
+  int *y = (int*) p;    // makes a 3rd designator
+  printf("%d\n", *y);   // uses the 3rd designator to access the object
+                        // also prints "123"
+  return 0;
+}
+~~~
+
+### Objects are just arrays of `char`
+
+"Under" every object there is an array of `char`, with as many `char`
+items as the `sizeof` of the object.
+
+You can usually access this array by creating a new designator with
+type "reference to `char`" referring to the same object.
+
+For example, this program is always valid:
+
+~~~c
+void decompose(int x) {
+  char *p = &x; // creates a designator to x with type reference to char
+
+  for (int i = 0; i < sizeof(x); i++)
+    printf("char number %d: %d\n", i, p[i]);
+}
+
+int main() {
+  decompose(123456789);
+  decompose(-123456789);
+  return 0;
+}
+~~~
+
+Try it out! This program *can* (but may not necessarily) print the following:
+
+~~~
+char number 0: 21
+char number 1: -51
+char number 2: 91
+char number 3: 7
+char number 0: -21
+char number 1: 50
+char number 2: -92
+char number 3: -8
+~~~
+
+Of course: **don't access the `char` elements of the array representation outside of the range 0 ... `sizeof-1`.** Otherwise, a kitten will die.
+
+### Assignments are just object copies
+
+Every time you use the syntax `x = y` (assignment) in C, the language
+will *copy the chars* of the representation of `y` and use them to
+overwrite the chars of the representation of `x`.
+
+- If the type on the left and right do not match, either:
+  - a *conversion* is possible, and the value on the right is converted to the type on the left before the copy;
+  - no conversion is possible, then the compiler stops with an error message.
+- The number of chars copied is *determined by the type of the designator on the left side*.
+
+For example:
+
+~~~c
+  int    x;
+  int    y = x;        // copy: representation of x overwrites representation of y.
+                       // sizeof(int) chars copied.
+
+  char   z = x;        // conversion of x to char, then copy to z.
+                       // 1 char copied.
+
+  struct person p = x; // error: no conversion exists (from int to struct).
+
+  int    a[10];
+  a = x;               // error: no conversion exists (from int to int[]).
+
+  int    *r = &x;      // copy: representation of &x overwrites representation of r.
+                       // sizeof(int*) chars copied.
+  int    *p;
+
+  p = r;               // copy: representation of r overwrites representation of p.
+                       // sizeof(int*) chars copied.
+~~~
+
+Two kinds of designators
+------------------------
+
+We distinguish further between:
+
+- **Primary designators**, *at most one per object* (perhaps zero)
+  - only for non-allocated objects.
+  - derived from the object's definition.
+  - **honest about mutability** - either `const` or not, and the information is accurate.
+  - if there is no primary designator, then the object is always mutable.
+- **Secondary designators**: everything else.
+  - can lie about mutability.
+
+For example:
+
+~~~c
+  int x = 123; // makes a primary designator "x" and an object.
+  int *p = &x; // "&x" is secondary designator, and so is "*p"
+               // "p" (without "*") is primary designator for the reference itself.
+
+  char *r;        // "r" is a primary designator for a reference.
+  r = malloc(10); // "malloc(10)" is secondary designator. "*r" becomes secondary designator.
+                  // There is no primary designator for the allocated object.
+
+  const int y = 3; // makes a primary designator "y" and an object.
+                   // the object is really immutable.
+
+  y = 42;          // compiler says no: y is immutable.
+
+  int *q = (int*) &y // force make a secondary designator "*q" to "y"
+                     // it lies about mutability.
+  
+  *q = 123;        // hmmm...
+~~~
+
+What does this program print?
+
+~~~c
+const int x = 123;
+int main() {
+   int *y = (int*) &x;
+   *y = 456;
+   int z = *y;
+   printf("%d\n", z);
+   return 0;
+}
+~~~
+
+**poll: progcm**
+[poll link](https://iqpolls.com/vote/progcm) -
+[poll results](http://iqpolls.com/p/5db95cd601b7be3fcfecb2c3/2fe27e0e5b91d96478a6d028)
+
+You know the drill...
+
+![Don't write to immutable objects via mutable designators!](write-const.jpg)
+
+Summary so far
+--------------
+
+- *objects* are all the things (but not types and control structures / statements).
+- objects have properties: *address*, *addressability*, *mutability*, *size*.
+- *storage*: where an object lives.
+  - just 4 storages: *auto*, *static*, *alloc* (and *thread*, but that's less important).
+- *lifetime*: when an object lives.
+  - storage decides lifetime.
+  - properties never change throughout the lifetime.
+- *designators* are names for objects.
+  - can have more than one or none at all.
+  - *types* are properties of designators, not objects.
+  - primary designator: at most 1; secondary: the rest.
+    - primary designator honest about mutability, secondary can lie.
+- all objects are just arrays of `char`.
+  - you can use a custom designator to access this array.
+  - number of elements determined by `sizeof`.
+- don't write to immutable objects! (via mutable secondary designators)
+
 Next topics
 ===========
 
-- switch, goto
-- linkage, storage and lifetimes
+- linkage and visibility
+- pointers, references and designators
 - declarators
 
 
