@@ -3315,6 +3315,243 @@ Summary
 - try very very very hard not to use `goto` directly.
   - certainly you won't need it in this course.
 
+Expressions (advanced)
+======================
+
+Operators, precedence and associativity
+---------------------------------------
+
+| Precedence | Operator | Example | Description | Associativity |
+|------------|----------|---------|-------------|---------------|
+| **1** | `++ --` |  `a++ a--` |  *Postfix* increment / decrement | Left-to-right |
+| | `()` | `a()`  | Function call | |
+| | `[]` | `a[]` | Array subscripting | |
+| |  `.` | `a.b`  | Member access | |
+| | `->` | `a->b` | Member access via reference | |
+| |  `(type){list}` | `(t){a,b}` | Compound literal | |
+| **2** | `++ --` |  `++a --a`  | *Prefix* increment / decrement | Right-to-left
+| |  `+ -` |  `+a  -a` | Unary plus and minus | |
+| |  `! ~` | `!a  ~a`  | Logical NOT and bitwise NOT | |
+| | `(type)` | `(t) a` | Type cast | |
+| |  `*`  | `*a` | Indirection (dereference) | |
+| |  `&` |  `&a` | Address-of | |
+| |  `sizeof` | `sizeof a`  | Size-of | |
+| |  `_Alignof`| `_Alignof a` | Alignment requirement | |
+| **3** | `* / %` | `a * b`, `a / b`, `a % b` | Multiplication, division and remainder | Left-to-right |
+| **4** | `+ - ` | `a + b`, `a - b` | Addition and substraction | Left-to-right |
+| **5** | `<< >>` | `a << b`, `a >> b` | Bitwise left and right shift | Left-to-right |
+| **6** | `< <=` | `a < b`, `a <= b` | Less (or equal) to | Left-to-right |
+|       | `> >=` | `a > b`, `a >= b` | Greater (or equal) to | Left-to-right |
+| **7** | `== !=` | `a == b`, `a != b` | Equal to / not equal to | Left-to-right |
+| **8** | `&` | `a & b` | Bitwise AND | Left-to-right |
+| **9** | `^` | `a ^ b` | Bitwise XOR | Left-to-right |
+| **10** | `|` | `a | b` | Bitwise OR | Left-to-right |
+| **11** | `&&` | `a && b` | Logical AND (with short-circuit evaluation) | Left-to-right |
+| **12** | `||` | `a || b` | Logical OR (with short-circuit evaluation) | Left-to-right |
+| **13** | `?:` | `a ? b : c` | Ternary conditional expression | Right-to-left |
+| **14** | `=`  | `a = b` | Simple assignment | Right-to-left |
+| | `+=` `-=` `*=` `/=` `%=` `<<=` `>>=` `&=` `^=` `|=` | `a += b`, `a -= b`, `a *= b`, etc. | Operation followed by assignment | Right-to-left |
+| **15** | `,` | `a, b` | Comma (sequencing) operator | Left-to-right |
+
+Note regarding groups 1 and 2:
+
+- `a->b++` is equivalent to `(a->b)++` (left-to-right).
+- `*a++` is equivalent to `*(a++)` (first postfix `++`, then indirection)
+- `++a++` is equivalent to `++(a++)` (first postfix, then prefix. Also happens to be invalid.).
+
+Note regarding groups 7 and 14:  "`a = b == c`" is equivalent to "`a = (b == c)`".
+
+Note regarding groups 14 and 15: "`a = b, c`" is equivalent to "`(a = b), c`".
+
+Side effects and sequence points
+--------------------------------
+
+A **side effect** is when the evaluation of an expression *during
+execution* "cannot be taken back without someone noticing".
+
+Example side effects:
+
+- printing something.
+- reading something from standard input.
+- calling a function that *may* performs side effects.
+- (usually) modifying the value of an object.
+- modifying a non-local object via a reference.
+
+Example non side effects:
+
+- defining a new variable.
+- computing the value of `a+2`. when `a` is a simple variable.
+
+A **sequence point** is a point in the code of the program where,
+during execution, all the side effects of the expressions that precede
+are guaranteed to have completed, before the expressions that follow
+start being evaluated.
+
+Example sequence points:
+
+- the semicolon between statements (`;`).
+- the comma operator (`,`).
+- the `&&` and `||` operators (also, see below).
+- the end of a function call expression (after the closing parenthesis in `foo(a,b,c)`).
+
+Example places **where there is no sequence point**:
+
+- arithmetic operators, e.g. `a + b`
+- the assignment oeprator, e.g. `a = b`
+- the argument list of a function call, e.g. between `a` and `b` in `foo(a, b)`
+
+What does it mean that "there is no sequence point"? See the
+definition above: this means *the order of evaluation is not
+guaranteed*.
+
+Example program:
+
+~~~c
+int main() {
+  int x = 42;
+  printf("%d\n", ++x, ++x);
+  return 0;
+}
+~~~
+
+What does this program print?
+
+**poll: progcn**
+[poll link](https://iqpolls.com/vote/progcn) -
+[poll results](http://iqpolls.com/p/6fe79421c39c5e14c2cbcaef/91fb00526ee894866d4acd3f)
+
+Short-circuit evaluation
+------------------------
+
+Most of the operators with multiple operands will evaluate all their
+operands before they compute a result.
+
+There are three exceptions: `&&`, `||` and `?:`.
+
+These operators implement "short-circuit evaluation": they **first**
+evaluate their first operand, **then** they test the value of the
+operand, and **then** they may (or not) evaluate the next operand.
+
+We say there is "hidden control flow" inside them.
+
+In other words:
+
+- "`a && b`" is equivalent to "`r = a; if (r) r = b;`"
+- "`a || b`" is equivalent to "`r = a; if (!r) r = b;`"
+- "`a ? b : c"` is equivalent to `if (a) r = b; else r = c;`"
+
+Some exercises:
+
+- what does `printf("a") || printf("b")` print?
+- what does `printf("") && printf("b")` print?
+- what does `printf("a") ? printf("b") : printf("c")` print?
+
+**poll: progco**
+[poll link](https://iqpolls.com/vote/progco) -
+[poll results](http://iqpolls.com/p/12bfc10aaa58b205ecba7f69/847d0e052debe3ac40a603c6)
+
+Note: `printf()` returns the number of characters printed.
+
+Lvalues and rvalues
+-------------------
+
+Expressions come in two sorts: **lvalues** ("left values") and
+**rvalues** ("right values").
+
+The names comes from the assignment operator (`=`):
+
+- only lvalues can appear on the left of an assignment;
+- either lvalues of rvalues can appear on the right of an assignment.
+
+**The intuition is (approximately) that "lvalues can be modified, but rvalues cannot."**
+
+In particular the compiler will always produce an error message if the
+left side of an assignment is not a lvalue.
+
+The operators that *require* an lvalue:
+
+- the assignment operators: `=`, `+=`, `-=`, `*=`, etc.
+- the increment/decrement operators: `++`, `--`
+
+How do you get lvalues or rvalues?
+
+- lvalues:
+  - the name of a variable: `a` is a lvalue if "`a`" designates a variable.
+  - the indirection (dereference) operator: `*a` is a lvalue.
+  - the array subscripting operator: `a[b]` is a lvalue (really because `a[b]` is `*(a+b)`).
+  - the member access operator: `a.b` and `a->b` are lvalues.
+  - a lvalue between parentheses: `(a)` is a lvalue if `a` is one.
+  - the assignment operators: `a = b`, `a += b` etc are lvalues (and incidentally the same as `a`).
+  - **nothing else.**
+
+- rvalues: **everything else.**
+
+Examples:
+
+- "`++a = 3`" — error: "`++a`" is not a lvalue.
+- "`*++a = 3`" — OK: "`*(++a)`" is a lvalue. (assuming `a` is a reference)
+- "`foo() = 3`" — error: "`foo()`" is not a lvalue.
+- "`foo()[10] = 3`" — OK: "`foo()[10]`" is a lvalue. (assuming `foo()` returns an array or reference to the first element of an array)
+- "`int a, b, c;  (a == 1 ? b : c) = 42;`" — error: "`?:`" does not produce lvalues.
+
+Why does this matter? So that you can better understand compiler error messages.
+
+Note about the array rules
+--------------------------
+
+Remember the 4 array rules from earlier?
+
+1. an expression with "array type" evaluates to a reference to its first element.
+2. a reference is a valid argument for a function that wants an array.
+3. `a[b]` equivalent to `*(a+b)`.
+4. if  `a` is a reference to an array element, `a+N` is a reference to the Nth element further.
+
+Look at rule 1 more closely. Now look at the following code:
+
+~~~c
+  int a[10];
+  int b[10];
+
+  a = b;
+~~~
+
+This code is invalid, but why?
+
+- `b` evalutates to a reference to its first element.
+- `a` evaluates to a reference to its first element.
+- the assignment has two things of the same type on the left and the
+  right (two references), so it should work. Why doesn't it?
+- also the error message says "cannot evaluate to expression with array type". This
+  suggests that the array rule 1 is not applied (or may be wrong). What's up?   
+
+That's because the full text of rule 1 is:
+
+1. an expression with "array type" evaluates to a reference to its
+   first element *when it is used as a rvalue*.
+
+Tada!
+
+Now the example `a = b` above has an array on the left (`a` does not
+degenerate) and a reference on the right (`b` does degenerate) so the
+assignment is invalid.
+
+(Also, a separate rule in C says that the assignment operators cannot
+be used on arrays.)
+
+Summary
+-------
+
+- there are *15 precedence levels* in C.
+  - mostly intuitive, except perhaps the relative precedence of "`=`", "`==`" and "`<`".
+  - learn them!
+- expressions may have *side effects* (things that happen which cannot be taken back).
+  - the order of side effects is determined by expression evaluation order.
+  - *sequence point* guarantee when side effects complete, e.g. the semicolon "`;`".
+  - **there are no sequence points in the argument list of a function call**.
+- big difference between *lvalues* and *rvalues* in C
+  - only lvalues can be assigned to by `=` but also `++` and `--`.
+  - first array rule says that array names degenerate to a reference to the first element, but only when they are used as rvalues.
+
 Objects and designators
 =======================
 
@@ -3448,6 +3685,57 @@ int* foo() { return &x; }
 
 Then "`x`", "`*p`" and "`*foo()`" are all three designators for the
 same object (the object that was defined by "`int x;`").
+
+### Designators and lifetimes
+
+What about the following program:
+
+~~~
+int main() {
+  int *p;
+  {
+    int x = 42;
+    p = &x;
+  }
+  printf("%d\n", *p);	
+  return 0;
+}
+~~~
+
+What's going on?
+
+- the lifetime of the object designated by `x` only extends to the end of its block.
+- `*p` is another designator to it.
+- the call to `printf` tries to use the 2nd designator beyond the lifetime of the object.
+  This is incorrect, but the compiler (often) won't notice.
+
+Remember the example from previously:
+
+~~~c
+int* square(int x) {
+   int result = x * x;
+   return &result;
+}
+
+int main() {
+   int* x = square(2);
+   printf("hello %d\n", *x);
+   return 0;
+}
+~~~
+
+What's going on, with your new understanding?
+
+- `&result` makes a 2nd designator for the object designated by `result`.
+- the lifetime of the object designated by `result` ends when `square` returns.
+- `*x` becomes a 3rd designator for the object designated by `result`.
+- `printf` tries to use the 3rd designator beyond the lifetime of the object.
+
+Remember the rule from above?
+
+![](ref-local-var2.jpg)
+
+![Don't use objects beyond their lifetime!](beyond-lifetime.jpg)
 
 ### No designators
 
