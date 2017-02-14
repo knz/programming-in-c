@@ -61,6 +61,7 @@ Your grade starts from 0, and the following tests determine your grade:
   temporarily remove the ``-fsanitize=address`` flags from the Makefile when
   you test your code with ``valgrind``.
 - -1pt if ``clang -W -Wall`` reports warnings when compiling your code.
+- between -1pt and 1pt for codestyle
 
 The following extra features will be tested to obtain higher grades,
 but only if you have obtained a minimum of 5 points on the list above already:
