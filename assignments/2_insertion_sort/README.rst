@@ -57,13 +57,17 @@ Your grade starts from 0, and the following tests determine your grade:
 - -0,5pt if your program misbehaves on zero-sized inputs.
 - -0,5pt if your program misbehaves when the last line does not terminate with a newline character.
 - -1pt if ``valgrind`` reports errors while running your program.
+  Valgrind and the address sanitizer don't like each other so
+  temporarily remove the ``-fsanitize=address`` flags from the Makefile when
+  you test your code with ``valgrind``.
 - -1pt if ``clang -W -Wall`` reports warnings when compiling your code.
 
 The following extra features will be tested to obtain higher grades,
 but only if you have obtained a minimum of 5 points on the list above already:
 
 - +1pt if your ``mysort`` accepts option ``-u`` which causes it to eliminate duplicate output lines.
-- +0,5pt if your ``mysort`` accepts option ``-n`` which causes it to prefix each output line with a count of the occurrences of the corresponding input.
+- +0,5pt if your ``mysort`` accepts option ``-S`` which calculates the
+  sum of all the items and appends that to the end of the list.
 - +0,5pt if your ``mysort`` accepts option ``-s`` taking a single argument, which causes it to only consider input lines multiple of that number.
 - +0,5pt if your ``mysort`` accepts option ``-x`` taking a single argument, which causes it to ignore any input line that are multiple of that number.
 - +0,5pt if your ``mysort`` accepts option ``-h`` taking a single positive number *N* as argument, which causes it to stop
