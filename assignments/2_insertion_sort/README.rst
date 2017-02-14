@@ -3,7 +3,7 @@
 ======================
 
 :Date: February 1st 2017
-:Deadline: February 22nd 2017 23:59 (anywhere on earth)
+:Deadline: February 22nd 2017 23:59
 
 Objectives
 ==========
