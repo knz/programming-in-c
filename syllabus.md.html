@@ -2841,16 +2841,17 @@ d;
 ~~~
 
 ********************
-*       o  a       *
+*       o a        *
 *       |          *
-*       v          *
-*     b o<---.     *
-*       |     |    *
-*       v     |    *
-*     c o----'     *
-*       |          *
-*       v          *
-*       o d        *
+*  c    v          *
+*  .-o->*----.     *
+* |  ^        |    *
+* |  |        v    *
+* |  |        o b  *
+* |  |        |    *
+* |   '------'     *
+* v                *
+* o d              *
 ********************
 
 Intro to `continue` and `break` via the CFG
@@ -2882,6 +2883,30 @@ e;
 
 ~~~c
 a;
+do { b; continue; c; } while(d);
+e;
+~~~
+
+**********************************
+*       o a                      *
+*       |                        *
+*  d    v                        *
+*  .-o->*----.                   *
+* |  ^        |                  *
+* |  |        v                  *
+* |  |        o b                *
+* |  |        |                  *
+* |  |'------'                   *
+* |  |                           *
+* |  |        o c (unreachable)  *
+* |  |        |                  *
+* |   '------'                   *
+* v                              *
+* o e                            *
+**********************************
+
+~~~c
+a;
 while (b) { c; if (d) continue; e; }
 f;
 ~~~
@@ -2906,6 +2931,34 @@ f;
 
 ~~~c
 a;
+do { b; if (c) continue; d; } while(e);
+f;
+~~~
+
+
+**********************************
+*       o a                      *
+*       |                        *
+*  e    v                        *
+*  .-o->*----.                   *
+* |  ^        |                  *
+* |  |        v                  *
+* |  |        o b                *
+* |  |        |                  *
+* |  |        v                  *
+* |  |'-------o c                *
+* |  |        |                  *
+* |  |        v                  *
+* |  |        o d (unreachable)  *
+* |  |        |                  *
+* |   '------'                   *
+* v                              *
+* o f                            *
+**********************************
+
+
+~~~c
+a;
 while (b) { c; break; d }
 e;
 ~~~
@@ -2924,6 +2977,28 @@ e;
 *   v                |          *
 * h o<--------------'           *
 *********************************
+
+~~~c
+a;
+do { b; break; c; } while(d);
+e;
+~~~
+
+**********************************
+*       o a                      *
+*       |                        *
+*  d    v                        *
+*  .-o->*----.                   *
+* |  ^        |                  *
+* |  |        v                  *
+* |  |      b o------.           *
+* |  |                |          *
+* |  |        o c     |          *
+* |  |        |       |          *
+* |   '------'        |          *
+* v e                 |          *
+* o<-----------------'           *
+**********************************
 
 ~~~c
 a;
@@ -2948,6 +3023,35 @@ f;
 *   v                |          *
 * f o<--------------'           *
 *********************************
+
+~~~c
+a;
+do { b; if(c) break; d; } while(e);
+f;
+~~~
+
+**********************************
+*       o a                      *
+*       |                        *
+*  e    v                        *
+*  .-o->*----.                   *
+* |  ^        |                  *
+* |  |        v                  *
+* |  |        o b                *
+* |  |        |                  *
+* |  |        v                  *
+* |  |      c o------.           *
+* |  |        |       |          *
+* |  |        v       |          *
+* |  |        o d     |          *
+* |  |        |       |          *
+* |   '------'        |          *
+* v f                 |          *
+* o<-----------------'           *
+**********************************
+
+
+
 
 `for` and its CFG
 -----------------
@@ -3798,10 +3902,13 @@ int main() {
 }
 ~~~
 
-### Objects are just arrays of `char`
+Object representations
+----------------------
 
 "Under" every object there is an array of `char`, with as many `char`
 items as the `sizeof` of the object.
+
+This is call the *representation* of an object.
 
 You can usually access this array by creating a new designator with
 type "reference to `char`" referring to the same object.
@@ -3872,6 +3979,200 @@ For example:
                        // sizeof(int*) chars copied.
 ~~~
 
+Linkage of objects, `extern`
+----------------------------
+
+*Linkage* answers the question "When does this and that designator (in
+two different places in the same source file, or in two different
+source files) refer to the same object?"
+
+There are just three sorts of linkages in C:
+
+1) **External linkage** is when the same designator declaration in
+different files refer to the *same object* (one object for the entire
+program).
+
+2) **Internal linkage** is when the same designator declaration in
+different files refer to *different objects*, one per translation unit
+(= source file), but there can be multiple declarations in the same
+translation unit that refer to that local object.
+
+3) **No linkage** is when each declaration refers to different
+objects.
+
+Why does this matter?
+
+- if you need to share a static* object between multiple source file:
+  you need external linkage.
+
+- if you need to share a static* object between multiple functions of the
+  same source file, but make it invisible to other source files: you need internal linkage.
+
+(The word "static" here refers to objects with static storage, see the
+section on storages earlier in this chapter).
+
+### How to make an object with external linkage
+
+An object with external linkage must have a *common name* throughout
+all the translation units of your program. (Conversely, it is not
+possible to give the same object different names in different
+translation units.)
+
+Say you want to make an object with name `x` that has external
+linkage. You do this as follows:
+
+1. exactly 1 translation unit in your program must contain a
+   definition for `x` in global scope without any linkage specifier
+   (neither `extern` nor `static).
+
+2. In every scope in your program where the common `x` is used:
+
+   - you use a *declaration* for `x` using the linkage specifier "`extern`", e.g. `extern int i;`
+   - there must not be any global scope declaration/definition of another object
+     also named `x` but with another linkage.
+
+Say for example you want to create a variable `counter` with external linkage, used in
+two source files `count.c` and `main.c`. The definition is in `count.c`. You do this as follows:
+
+- technically correct, works but somewhat *brittle*:
+
+  1. write the following in `count.c`: `int counter;`
+  2. write the following in `main.c`: `extern int counter;`
+
+  (Why is this brittle? **If you ever change the type of `counter` in
+  `count.c` but forget to do so in `main.c`, the compiler won't notice
+  and kittens may die.**)
+
+- preferred:
+
+  1. write the following in `count.c`: `int counter;`
+  2. write the following in `counter.h`: `extern int counter;`
+  3. write the following at the beginning of both `count.c` and `main.c`: `#include "counter.h"`
+
+![Use a header to declare your objects with external linkage!](different-types.jpg)
+
+### How to make an object with internal linkage
+
+An object with internal linkage has the same name within the
+translation unit (= source file) where it used.
+
+Two objects with internal linkage from different translation units may
+reuse the same name.
+
+Say you want to make an object with name `x` that has internal
+linkage. You do this as follows:
+
+1. the *first* declaration of `x` in the translation unit must occur
+   in the global scope with the linkage specifier "`static`". This is also a definition.
+
+2. There is no step 2: the declaration at step 1 is available everywhere*.
+
+   However, *if* your source file also contains more than one
+   declaration for `x` that follow the first, but then the second or
+   later all use "`extern`", then all these declarations refer to that
+   same object with internal linkage, and the program is still
+   correct. (Despite your use of "`extern`". Yes, this is weird.)
+
+For example:
+
+~~~c
+static int x;
+
+int foo() { return x; } // refers to the common `x`
+
+extern int x; // this is useless here, but happens to be correct.
+              // refers to the same `x` as the declaration above.
+
+void bar() { x = x + 2; } // refers to the common `x`
+~~~
+
+Note: the step-2-that-doesnt-exist above mentions "the declaration is
+available everywhere". This is not *exactly* true, consider the
+following source file:
+
+~~~c
+static int x; // definition of object `x` with internal linkage.
+
+int foo() { return x; } // this is correct and uses the common object.
+
+int bar(int x) { return x; } // the parameter `x` hides the global scope object `x`.
+
+int baz(int x) {
+  extern int x; // this new declaration refers to `x` in global scope!
+                // i.e. the object with internal linkage.
+                // this new declaration also shadows (hides) the parameter declaration.
+  return x;
+}
+~~~
+
+### The double meaning of `extern`
+
+- When you use `extern` in the *first* declaration for a name in a translation unit, two things happen:
+  - this is a promise that there is a definition with external linkage elsewhere — either in the same source file or another.
+  - all the following declarations/definitions for the same name in global scope are constrained
+    to also have external linkage. **If you try to later redefine the object with internal linkage, an error will occur.**
+
+- When you use `extern` *after the first declaration* and *the first declaration is also a definition*, two things happen:
+  - the first definition decides the linkage.
+  - the object may have any linkage, and the `extern` keyword will not check anything.
+
+In other words:
+
+- `extern` declaration, then `static` declaration/definition: **compiler error**.
+- `static` declaration/definition, then `extern` declaration: no error, that's correct and the `extern` declaration is ignored.
+
+### The double meaning of `static`
+
+The word "`static`" in C is reused for two different sorts of declaration. Do not confuse them!
+
+1. `static` *inside* a function body defines an object with static storage and *no linkage*.
+
+2. `static` *outside* a function body (in global scope) defines an object with static storage and *internal linkage*.
+
+Example:
+
+~~~c
+int foo() {
+  static int x = 0; // no linkage, `x` is "local" to `foo`.
+  return ++x;
+}
+
+int bar() {
+  static int x = 0; // no linkage, `x` is "local" to `bar`.
+  return ++x;
+}
+
+int main() {
+ return printf("%d %d\n", foo(), bar());
+}
+~~~
+
+This always prints "1 1": the computations in `foo()` and `bar()` always operate on different objects.
+
+Compare with:
+
+~~~c
+static int x = 0; // internal linkage, `x` is "shared"
+int foo() {
+  return ++x;
+}
+
+int bar() {
+  return ++x;
+}
+
+int main() {
+ return printf("%d %d\n", foo(), bar());
+}
+~~~
+
+This may print "1 2" or "2 1". The computations in `foo()` and `bar()`
+operate on the same object named `x`. (The order of the two values in
+the `printf` output is unspecified because there is no sequence point
+in the argument list, so the compiler is free to chose in which order
+`foo` and `bar` are called. See the section above on sequence points
+and side effects.)
+
 Two kinds of designators
 ------------------------
 
@@ -3904,13 +4205,24 @@ For example:
   int *q = (int*) &y // force make a secondary designator "*q" to "y"
                      // it lies about mutability.
   
-  *q = 123;        // hmmm...
+  *q = 123;        // hmmm... (we'll get back to it.)
 ~~~
 
-What does this program print?
+### Mutability
+
+*Mutability* is a property of *objects*.
+
+However the *type* of each designator also *advises* whether the
+compiler should check if writing to the object via the designator is
+valid. However, getting this information right is the responsibility
+of the programmer, and it's possible to get this wrong via a secondary
+designator!
+
+For example, what does this program print?
 
 ~~~c
-const int x = 123;
+const int x = 123; // this defines an immutable object.
+
 int main() {
    int *y = (int*) &x;
    *y = 456;
@@ -3924,9 +4236,92 @@ int main() {
 [poll link](https://iqpolls.com/vote/progcm) -
 [poll results](http://iqpolls.com/p/5db95cd601b7be3fcfecb2c3/2fe27e0e5b91d96478a6d028)
 
-You know the drill...
+In general:
+
+| Primary designator says ... | Object is ... |
+|-----------------------------|---------------|
+| nothing (no "`const`)       | mutable       |
+| `const`                     | immutable     |
+
+| Object is ... | Secondary designator is ... | Program tries to write via designator |
+|---------------|-----------------------------|---------------------------------------|
+| mutable       | non-`const`                 | write is allowed, everything good     |
+| mutable       | `const`                     | write is disallowed (compile error), everything good |
+| immutable     | `const`                     | write is disallowed (compile error), everything good |
+| immutable     | non-`const`                 | .... kittens die.                     |
 
 ![Don't write to immutable objects via mutable designators!](write-const.jpg)
+
+### Visibility
+
+*Visibility* is a property of *primary designators*.
+
+Visibility answers the question: "Where in the source code can a designator be used?"
+
+**Everything is decided by scopes.**
+
+"Scope" is the technical word for what you commonly call "block structure":
+
+- there is a global scope.
+- each group of braces (`{` ... `}`) defines an additional scope.
+- scopes can be nested.
+- a definition of a name within a scope can *shadow* (hide) another declaration for the name in an outer scope, *for the duration of the inner scope.*
+- it's not possible to define the same name two times in the same scope.
+- differences with C++:
+  - the parameter list is in the same scope as the function body (they are different scopes in C++).
+  - the first position in `for (a; b; c)` does not start its own scope (it does in C++).
+
+Hopefully you know all this already if you ever used a programming
+language with
+[lexical scoping](https://en.wikipedia.org/wiki/Scope_%28computer_science%29#Lexical_scoping). (That
+is, the majority of languages in use today. But not all of them, for
+example the shell script language does not use lexical scoping.)
+
+For example, the following code is valid:
+
+~~~c
+int x = 1;          // global scope.
+int foo() {
+  int x = 2;        // function scope.
+  while(1) {
+    int x = 3;      // scope of body of "while".
+    // here `x` is 3.
+
+    if (1) {
+      int x = 4;    // scope of body of "if".
+      x++;          // This refers to the innermost closest declaration.
+
+      // here `x` is 5.
+    }
+
+    // here is `x` 3 again.
+  }
+
+  // here is `x` 2 again.
+  ...
+}
+// here is `x` 1 again.
+~~~
+
+The following code is incorrect:
+
+~~~c
+int foo(int x) {    // function scope
+  int x;            // function scope again - double definition = invalid.
+  ...
+}
+~~~
+
+So is the following:
+
+~~~c
+int foo() {
+  int i;                       // function scope
+  for (int i = 0; i < 10; i++) // function scope - double definition
+     printf("%d\n", i);
+  ...
+}
+~~~
 
 Summary so far
 --------------
@@ -3941,18 +4336,362 @@ Summary so far
 - *designators* are names for objects.
   - can have more than one or none at all.
   - *types* are properties of designators, not objects.
-  - primary designator: at most 1; secondary: the rest.
-    - primary designator honest about mutability, secondary can lie.
 - all objects are just arrays of `char`.
+  - the values in that array are called the *representation* of the object.
   - you can use a custom designator to access this array.
   - number of elements determined by `sizeof`.
-- don't write to immutable objects! (via mutable secondary designators)
+- *linkage* defines how to "share" an object between different functions or different files.
+  - the words "`static`" and "`extern`" control linkage.
+- two kinds of designators: *primary* and *secondary*.
+  - primary designator: at most 1; secondary: the rest.
+  - don't write to immutable objects! (via mutable secondary designators)
+    - primary designator honest about mutability, secondary can lie.
+  - *visibility* is property of primary designators, controlled by block structure.
+
+Pointers, references and designators
+====================================
+
+So far we have used three different words for related things:
+
+- "references": in this course, also common in other programming languages.
+- "pointers": not so far in this course, but very common in C books & tutorials.
+- "designators": in this course, in every technical documentation about C compilers.
+
+Why did we avoid the word "pointer" so far?
+
+1. for all the explanations so far, both the words "reference" and
+   "pointer" would have been accurate -- their meaning happens to
+   overlap in the various previous contexts. So which one to use was a
+   matter of stylistic choice, and we went for "reference" because
+   that's what every other programming language also does to explain
+   the same things.
+
+   (For example: everyone talks/writes about "passing an argument to a
+   function by reference", not "passing an argument to a function by
+   pointer").
+
+2. for the next sections, you will see there *is* a subtle difference
+   between the two words "reference" and "pointers", and the word
+   "pointer" is actually more complex to understand. From an
+   educational standpoint, is is useful to use different words when
+   talking about the same thing at different levels of complexity.
+
+   (For example, in physics people learn to work with "the newtonian
+   model" until they start to study the "standard model", even though
+   everything that's true when they started learning could also have
+   been taught using the standard model.)
+
+What's the relationship between the three words?
+
+- "pointer" / "reference" are related; "pointer" is the more advanced
+  concept beyond "reference". Everything that's conceptually true
+  about references is also true about pointers (but not the other way
+  around).
+
+  The two words can be used in *many different programming languages*,
+  not just C.  They can also be used in many different conversations:
+  about algorithms, data structures, performance optimization, etc.
+
+- "designator" is another abstraction used to talk about objects *in C
+  specifically*, and is only used for technical conversations
+  specifically about mutability, visibility, linkage and
+  representations for objects in C, as described in the previous
+  chapter.
+
+  Designators also happen to be more general than references.
+  Every reference in C happens to be a designator, but not all designators are references.
+
+The following sections clarify this relationship.
+
+References: a logical (abstract) construct
+------------------------------------------
+
+A *reference*, in C like in other languages that have them (Java, Python...) is an object that *refers* to another object.
+
+When we say "object `b` refers to object `a`" we mean the following abstract relationship:
+
+- object `a` exists.
+- object `b` exists. Also, it is a different object.
+- there exists an *operator* which, when applied to `b`, designates `a`. This operator is called the "indirection" or "dereference".
+  - we called it `deref()` early on in this course.
+  - it is written with a unary "`*`" in C, like this: "`*b`"
+
+We can also *draw* this relationship:
+
+****************************
+*                          *
+*    b             a       *
+*  .-----.      .-----.    *
+* |    ---+--->|       |   *
+*  '-----'      '-----'    *
+*                          *
+****************************
+
+Tip: when you draw these diagrams:
+
+- place the name of the object you're talking about on the *outside* of the box.
+- if you also need to talk about it, place the *value* of the object inside the box.
+
+This way, you can talk and think separately about the name of the object and its value without getting confused between them.
+
+Syntax-wise, suppose you have used the following declaration to define an object: `int a = 123;`
+
+- the text "`a`" designates the object.
+- the text "`&a`" makes (and designates) a new reference to the object.
+- the text "`int* b`" declares+defines a variable that can contain references.
+- the text "`b = &a`" (after the declaration of `b`) stores the reference expressed by "`&a`" in `b`.
+- the text "`b`" (after the assignment `b = &a`) designates a reference.
+- the text "`*b`" dereferences the reference in `b`, and therefore designates the object also designated by "`a`".
+- the text "`*a`" is an error (`a` does not designate a reference.)
+- the text "`*&a`" (or "`*(&a)`") dereferences the reference `&a`, and thus designates the same object as "`a`".
+
+**Note: this definition and relationship is abstract, and belong to the world of mathematical ideas.**
+
+Conveniently, this is also the abstraction level at which you define *data structures* and *algorithms* in this course.
+You could probably use only the word "reference" throughout and still get a good grade.
+
+**Warning - do not confuse the verbs:**
+
+- *"to reference"*: this is a verb that you can use only after a C object. For example "this object here references that object there."
+- *"to designate"*: this is a verb that you can use only after a designator. For example "this name here designates that object there."
+
+Hint: re-read the previous chapters with this distinction in mind. Check whether the two verbs were used properly.
+
+Pointers: mechanism and implementation for references
+-----------------------------------------------------
+
+Hint: if you are not yet confortable with the distinction between concept
+and mechanism/implementation, this is the good time to give it more attention. Some examples:
+
+- "vehicle" is a concept. The Ford T is an implementation, the design
+  of its axle, wheels, chassis, chairs, steering wheel, motor
+  etc. form the mechanism.
+- "dog" is a concept. Fido, Pluto and Lassie are
+  implementations. Their biological makeup form the mechanism.
+- "higher education" is a concept. The BSc Informatica at UvA is an implementation.
+  Lectures, labs and study form the mechanism.
+
+Then on the same line:
+
+- "references" are a concept. Pointers are an implementation of
+  references in C; the pointer rules (detailed below) form the
+  mechanism.
+
+### Pointer types
+
+You can manipulate references in C by using objects via a designator with *pointer type*.
+
+(Reminder: types are properties of designators, not objects.)
+
+That is when you define `b` to be a reference:
+
+~~~c
+int *b;
+~~~
+
+you are using the type "pointer to `int`" to declare `b`.
+
+Other way to think about it: you use a pointer type when writing the
+declaration/definition of a primary designator as a means to achieve a
+declaration/definition of a reference object.
+
+So after the declaration "`int *b`":
+
+- the short name "`b`" is the primary designator for an object that happens to be a reference.
+- the type of the designator "`b`" is "pointer to `int`".
+- the expression "`*b`" designates the object referred to by `b`.
+
+**Colloquially, we say "`b` is a pointer to `a`" to mean "the object designated by `b` is a reference to `a` and the designator 'b' has a pointer type".**
+
+### Pointer values
+
+Recall the definition:
+
+
+~~~c
+int a;
+int *b = &a;
+~~~
+
+This defines an object named `b` that refers to another object named `a`.
+
+The *own value* of `b` (i.e. not the value of `a`) is also a number: it happens to be the address of `a` in memory.
+
+Because it is "just a number" you can also "read" it!
+In general, if you want to *observe* the own value of a reference object (for example to print it or store it in a file), you need to either:
+
+- first convert it explicitly to an integer type; or
+- access its underlying representation as an array of `char`, as described in the previous chapter.
+
+Example observation, by storing it in another variable with a suitable integer type:
+
+~~~
+int main() {
+   int a;
+   int *b = &a;
+
+   long  v = (long) b;  // we copy the own value of `b` into `v`.
+   printf("%ld\n", v);  // so we can print it.
+   return 0;
+}
+~~~
+
+This program is valid, and prints some implementation-dependent value.
+
+What's going on?
+
+- we are using `long` in the example for the conversion instead of `int` because:
+  - on many platforms, a pointer value is larger than the maximum `int` value, so it wouldn't fit in an `int` variable.
+  - on most platforms, `long` happens to be large enough*.
+
+Note: `long` is not really technically correct either. There are
+platforms where a pointer value does not fit in `long` either. The
+proper type is `intptr_t` (defined in `stdint.h`) or anything larger,
+for example `intmax_t`.
+
+Another example observation, by accessing its underlying representation:
+
+~~~
+int main() {
+   int a;
+   int *b = &a;  // here `b` is an object, that refers to `a`
+
+   char *x = (char*) &b; // access the representation of `b`
+
+   for (int i = 0; i < sizeof(b); i++)
+      printf("char %d of b: %d\n", x[i]);  // print all the chars
+   return 0;
+}
+~~~
+
+This program decomposes the reference in `b` to the individual `char` parts of its representation.
+
+### Pointer rules
+
+A designator `x` with pointer type has an integer value and can be used as operand to the following operators:
+
+1. "`*x`"
+
+   designates the object at the location in memory stored in `x`.
+2. "`x + N`" (where `N` is an expression of integer type)
+
+   evaluates to
+   the numeric value of `x`, added to the value of `N` times the size
+   of `*x`. In other words: `x + N == ((intptr_t)x) + N * sizeof(*x)`
+  
+   The result has pointer type again.
+3. "`x - N`" (where `N` is an expression of integer type)
+
+   evaluates to
+   the numeric value of `x`, substracted with the value of `N` times the size
+   of `*x`. In other words: `x - N == ((intptr_t)x) - N * sizeof(*x)`
+
+   The result has pointer type again.
+4. "`N + x`" (where `N` is an expression of integer type)
+
+   equivalent to "`x + N`" (commutativity of `+`).
+5. `x` cannot be used as operand to any other arithmetic operator. In particular "`N - x`" is invalid; "`x - N`" was really a special case.
+
+That's all!
+
+### Relationship between the pointer rules and array rules
+
+The rules above are the only rules about pointers!
+
+Meanwhile, earlier on in a previous chapter we talked about the "array rules", and we phrased them as follows:
+
+1. an expression with "array type" evaluates to a reference to its first element.
+2. a reference is a valid argument for a function that wants an array.
+3. `a[b]` equivalent to `*(a+b)`.
+4. if  `a` is a reference to an array element, `a+N` is a reference to the Nth element further.
+
+Since pointers in C are the implementation of references, this is a correct phrasing too:
+
+1. an expression with "array type" evaluates to a reference to its first element, *and its type is a pointer type to the array element type*.
+2. a ~~reference~~ *expression with pointer type* is a valid argument for a function that wants ~~an array~~ *a value with array type*.
+3. `a[b]` equivalent to `*(a+b)`. *(that remains true!)*
+4. if  `a` is a reference to an array element, `a+N` is a reference to the Nth element further. *(that remains true too!)*
+
+Let's rephrase rule 4: "if `a` is a value with pointer type, that happens to be a reference to an array element, then `a+N` is another
+value with pointer type, that happens to be a reference to the Nth element further."
+
+Is this true?
+
+Let's *prove* that it is true using only the pointer rules.
+
+Consider the start situation, after you have declared the following:
+
+~~~c
+  int x[4] = { 42, 69, 101, 51, -123 };
+  int *r = &x;
+~~~
+
+******************************************************************
+*  position     x[0]     x[1]     x[2]     x[3]     x[4]         *
+* in memory:    4432     4436     4440     4444     4448         *
+*             +--------+--------+--------+--------+--------+     *
+*   array x:  |  42    |  69    |  101   |  51    | -123   |     *
+*             +--------+--------+--------+--------+--------+     *
+*                 ^                                              *
+* reference: r    |                                              *
+*  .-------.      |                                              *
+* |  4432 --+-----'                                              *
+*  '-------'                                                     *
+*                                                                *
+******************************************************************
+
+Situation in this particular example:
+
+- there is an array of 5 elements in memory.
+- its 5 elements are at position 4432, 4436, 4440, 4444, 4448 in memory.
+- each element takes 4 positions (bytes) in memory, because `sizeof(int) == 4`.
+- the designator `r` has type "pointer to `int`".
+- "`r`" designates an object, it is a reference to `x[0]`. (an abstract relationship!)
+- "`r`" designates an object, its *own value* is 4432. This happens to be the address of `x[0]` in memory. (this is the concrete mechanism!)
+
+Now, what happens when you write `r[2]`?
+
+1. `r[2]` is equivalent to `*(r + 2)`
+2. We see "`r + 2`". `r` is a designator with pointer type, so we must use the pointer rule (2). The pointer rule says
+   "`r + 2` evaluates to the numeric value of `r`, added to the value of `2` times the size of `*r`.
+
+   - `r` has type "pointer to `int`", so the size of `*r` is the size of `int`, i.e. 4 in this example.
+   - the numeric value of `r` is 4432.
+   - so the expression really computes 4432 + 2 * 4 = 4440.
+   - this final value in turn has pointer type.
+3. The operator `*` is applied on the result (4440) but it has pointer type, so the pointer rule (1) applies:
+   The expression `*(r+2)` designates the object at the location in memory computed by `r+2`, so it designates the object
+   at location 4440, that's `x[2]`.
+
+Tada!
+
+Summary
+-------
+
+- *references* are an abstract concept that you can use to mentally
+  picture "links" to objects. You can have multiple references to the
+  same object, you can draw little boxes with arrows to visualize
+  them, etc.
+- *pointers* are the mechanism in C to implement references.
+  - you make a pointer by defining an object with *pointer type*.
+  - reminder: the designator has pointer type, not the object itself!
+  - the object is actually just a variable that stores a number.
+  - the *value* of that object is a number, which may be the address in memory of an arbitrary object.
+  - the *pointer rules* allow you to perform basic operations on designators with pointer type.
+- the phrase "pointer variable" is a colloquialism that means "variable declared with pointer type".
+- the phrase "`a` points to `b`" is a colloquialism that means "`a`
+  designates an object which is a reference to `b`, and `a` was
+  declared with pointer type".
+
+  The person who uses this last phrase *may* also intend to mean that "the
+  value of the object designated by `a` is the address of `b` in
+  memory", but usually this is not the case, because people who talk
+  about pointers usually think about the abstract concept of reference
+  and do not care about memory addresses that much.
 
 Next topics
 ===========
 
-- linkage and visibility
-- pointers, references and designators
 - machine behavior
 - declarators
 - multi-dimensional arrays
