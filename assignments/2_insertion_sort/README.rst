@@ -42,7 +42,7 @@ Getting started
 5. Implement the input and insertion sort algorithm in
    ``main.c``.
 
-   You can use e.g. ``du ~ | awk {print $1} | ./mysort`` to test your
+   You can use e.g. ``du ~ | awk '{print $1}' | ./mysort`` to test your
    work.
 
 Grading
@@ -57,9 +57,9 @@ Your grade starts from 0, and the following tests determine your grade:
 - -0,5pt if your program misbehaves on zero-sized inputs.
 - -0,5pt if your program misbehaves when the last line does not terminate with a newline character.
 - -1pt if ``valgrind`` reports errors while running your program.
-  Valgrind and the address sanitizer don't like each other so
+  Valgrind and the address sanitizer don't play well together so
   temporarily remove the ``-fsanitize=address`` flags from the Makefile when
-  you test your code with ``valgrind``.
+  testing your code with ``valgrind``.
 - -1pt if ``clang -W -Wall`` reports warnings when compiling your code.
 - between -1pt and 1pt for codestyle
 
