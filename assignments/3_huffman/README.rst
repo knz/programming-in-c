@@ -79,6 +79,10 @@ Order of work (strongly suggested)
 
    Will be printed as: ``AB.C.``
 
+   Call ``print_tree()`` in ``decode.c`` on tree returned by
+   ``fixed_tree()`` to test your implementation. Check
+   ``fixed_tree()`` verify your output.
+
 2. Using the provided example Huffman tree in the code as constant
    tree input (ignoring the command-line argument), complete:
 
