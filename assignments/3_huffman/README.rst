@@ -97,7 +97,7 @@ Order of work (strongly suggested)
    ``print_tree`` function from step 1 and your algorithm in this step
    to produce a coded tree and a coded input valid for the provided
    ``decode.ref`` program. You can then use ``decode.ref`` to check
-   whether your work up to this point is correct. Eg.
+   whether your work up to this point is correct. The command
    ``echo "abca" | ./encode  | ./decode.ref`` should print ``abca``.
 
 3. Again using the provided example Huffman tree as constant (ignoring
@@ -107,12 +107,16 @@ Order of work (strongly suggested)
    You can then use your ``encode`` program from step 2 to check your
    newly minted ``decode`` program.
 
-4. Implement the missing ``load_tree`` function which reads
-   a tree definition created by ``print_tree`` and re-creates the
-   corresponding tree. Hint: you may need to re-use your stack code for this.
+4. Complete your ``decode`` program by implementing the missing
+   ``load_tree`` function which reads a tree definition created by
+   ``print_tree`` and re-creates the corresponding tree. Hint: you may
+   want to use the generic stack implemented in ``stack.c``.
 
-   Then you can use the provided ``encode.ref`` to check that your decode program
-   can now handle inputs with different trees.
+   Then you can use the provided ``encode.ref`` to check that your
+   decode program can now handle inputs with different trees.
+   Check if the trees printed by ``encode.ref`` and ``decode`` match.
+   The command ``echo "xxyzzz" | ./encode.ref | ./decode`` should
+   print ``xxyzzz``.
 
 5. Complete your ``encode`` program by writing the ``compute_tree()``
    algorithm that creates an optimal Huffman tree from the input,
