@@ -1760,6 +1760,7 @@ Here are *all the basic types*:
 
 | Name | Synonyms | Description | Size in memory (bytes) | Possible values |
 |------|----------|-------------|------------------------|-----------------|
+| `_Bool` | `bool`  (`stdbool.h`) | A boolean variable | 0 or 1 (always), `true` or `false` (`stdbool.h`) |
 | `char` | N/A | A small whole number | 1 <= **Sc** | either $[-2^{Sc-1} ... 2^{Sc-1}-1]$ or $[ 0 ... 2^{Sc}-1 ]$ - **it depends on the environment** |
 | `signed char` | N/A | A small signed whole number | 1 <= **Sc** | always $[ -2^{Sc-1} ... 2^{Sc-1}-1 ]$ |
 | `unsigned char` | N/A | A small unsigned (positive) whole number | 1 <= **Sc** | always $[ 0 ... 2^{Sc}-1 ]$ |
@@ -1785,9 +1786,10 @@ Which type should you use in your own programs?
 - if you need a whole number: use `int`, unless you have a good reason to use something else.
 - if you need a floating-point number: use `double`, unless you have a good reason to use `float`.
 - if you need a character: use `int`, except when you need an array of characters, then use `char`.
+- if you need a boolean: use `bool`, possibly `int`.
 
 Side question: why does C provide so many types if one only needs
-`int`, `char` and `double` in most programs? That's because these
+`int`, `char`, `double` and `bool` in most programs? That's because these
 options give control to the programmer over memory usage and
 performance. Once you start caring about memory usage and performance,
 you can start thinking about this again. (note: not in this course.)
@@ -4591,7 +4593,12 @@ A designator `x` with pointer type has an integer value and can be used as opera
 4. "`N + x`" (where `N` is an expression of integer type)
 
    equivalent to "`x + N`" (commutativity of `+`).
-5. `x` cannot be used as operand to any other arithmetic operator. In particular "`N - x`" is invalid; "`x - N`" was really a special case.
+
+5. "`x - y`" (where `y` also has pointer type)
+
+   evaluates to the numeric value of `x` substracted with the numeric value of `y`.
+
+6. `x` cannot be used as operand to any other arithmetic operator. In particular "`N - x`" is invalid; "`x - N`" and "`x - y`" were really a special case.
 
 That's all!
 
@@ -4690,6 +4697,413 @@ Summary
   about pointers usually think about the abstract concept of reference
   and do not care about memory addresses that much.
 
+Types, declarations and declarators
+===================================
+
+Can you read C declarations?
+
+This is a declaration for a variable named `c`, whose designator has type `int`:
+
+~~~ c
+int c;
+~~~~
+
+Nothing special? What about this:
+
+~~~c
+char *(*(**foo[][8])())[];
+~~~
+
+Basic and derived types
+-----------------------
+
+Remember the chapter on [types](#types) earlier in this document. It
+made the distinction between "basic" types (`int`, `char` etc) and
+"composite" types built using other types (struct, arrays, etc.)
+
+For this chapter, we'll use a different classification:
+
+- **Basic** types here encompass "basic" types from earlier, and also enums, structs and unions.
+- **Derived** types encompass the rest: *array*, *function*, and *pointer* types.
+
+  These types are called "derived" because a declaration for a
+  designator of this type includes the syntax of some basic type.
+
+The following sections explain how to *name* a type: how you as a
+person can phrase the name of the type when you explain your
+code. They should also guide you with the opposite process: how to go
+from the name to the type.
+
+Then there are three derivations possible from existing types:
+
+- "`*`", called **"pointer to ..."**
+
+  This is denoted by the familiar `*` character. The type being pointed to must be phrase
+
+- "`[]`", called **"array of ..."**
+
+  "Array of" can be undimensioned — `[]` — or dimensioned — `[10]` —
+  but the sizes don't really play significantly into reading a
+  declaration. We typically include the size in the description.
+
+- "`()`", called **"function returning ..."**
+
+  This is usually denoted by a pair of parentheses together — `()` —
+  though it is also possible to find a prototype parameter list
+  inside. **Important**: the parentheses used to denote "function returning" are different
+  from those used for grouping: grouping parens surround the
+  variable name, while "function returning" parens are always on the
+  right of the name.
+
+The description of a derived type *must* always include the type that is being derived.
+To describe a declaration, you will always use the words "to", "of" or "returning".
+For example, saying "the type of `foo` is pointer" is non-sensical.
+
+### Operator precedence (reminder)
+
+Remember from section
+[Operators, precedence and associativity](#operators,precedenceandassociativity)
+there are 15 precedence levels. The particular point you need to remember here:
+
+**The postfix function application and array indexing with `()` and
+`[]` have a higher precedence than the prefix indirection operator
+`*`.**
+
+That is, an expression of the form "`*p()`" is to be read "`*(p())`"
+(not `(*p)()`!)
+
+and "`*p[i]`" is "`*(p[i])`" (not `(*p)[]`!).
+
+### A simple example
+
+The examples in this section and the following section are borrowed
+from this page: http://unixwiz.net/techtips/reading-cdecl.html
+
+Consider: `long **foo[7];`
+
+General rules:
+
+- a declaration can only have one basic type, and it is always on the far left of the declaration syntax.
+- we always start the description sentence with the identifier, and end it with the basic type on the left.
+
+For this example, the sentence thus will have the following structure: "`foo` designates .... `long`".
+
+Now, starting from the name `foo`, we use the rules of operator precedence to decompose the meaning.
+
+1. `**foo[7]` is really `*(*(foo[7)))`
+2. first is `foo[7]`: "`foo` designates an **array of 7** ..."
+3. then `*`: "`foo` designates an array of 7 **pointer to** ..."
+4. then `*` again: "`foo` designates an array of 7 pointer to **pointer to** ..."
+5. nothing any more, so we end with the basic type on the left: "`foo` designates an array of 7 pointer to pointer to long."
+
+### A more complex example
+
+Consider the example from earlier:
+
+~~~c
+char *(*(**foo[][8])())[];
+~~~
+
+Applying the general principle, we know the description will be like this: "`foo` designates .... `char`".
+
+Then we apply the priority rules starting from `foo`:
+
+1. `foo[]`: "`foo` designates an **array of** ..."
+2. `...[8]`: "`foo` designates an array of **array of 8*** ..."
+3. `*...`: "`foo` designates an array of array of 8 **pointer to** ..."
+4. `*...`: "`foo` designates an array of array of 8 pointer to **pointer to** ..."
+5. `(...)()` (note the function parentheses on the right!): "foo designates an array of array of 8 pointer to pointer to **function returning** ..."
+6. `*...`: "`foo` designates an array of array of 8 pointer to pointer to function returning **pointer to** ..."
+7. `(...)[]`: "`foo` designates an array of array of 8 pointer to pointer to function returning pointer to **array of** ..."
+8. `*...`: "`foo` designates an array of array of 8 pointer to pointer to function returning pointer to array of **pointer to** ..."
+9. nothing any more, so we finish with the basic type on the left:
+
+   "`foo` designates an array of array of 8 pointer to pointer to
+   function returning pointer to array of pointer to char."
+
+Tada! You may not *understand* what this means, but at least you can read it!
+
+(Note: this example is artificial. Nobody in their sane mind should
+use this type as-is in production code.)
+
+**Tip:** the following web site automates this conversion: http://cdecl.org/
+
+### Restrictions on derived types
+
+The following rules always apply:
+
+1. you cannot define or use a type that is an array of functions. (array of pointers to functions are OK though).
+2. functions cannot return functions. (they can return pointers to functions though).
+3. functions cannot return arrays. (they can return pointers though).
+4. in array types, only the leftmost `[]` can omit the number of elements.
+5. the pseudo-type "`void`" can only be used in derivation, and can
+   only be derived using "pointer to" and "function returning", *not*
+   "array of".
+
+
+Examples:
+
+~~~ c
+int foo[]();    // foo is array of function returning int: invalid (rule 1)
+int (*foo[])(); // OK: foo is array of pointer to function returning int.
+
+int foo()();    // foo is function returning function returning int: invalid (rule 2)
+int (*foo())(); // OK: foo is function returning pointer to function returning int
+
+int foo()[10];    // foo is function returning array of 10 int: invalid (rule 3)
+int (*foo())[10]; // OK: foo is function returning pointer to array of 10 int
+
+int foo[10][];    // foo is array of 10 array of int: invalid (rule 4)
+int foo[][10];    // OK, but not strictly equivalent: foo is array of array of 10 int
+int *foo[10];     // OK, also not equivalent: foo is array of 10 pointer to int
+
+void foo;         // invalid: void can only be used in derivations (rule 5).
+void foo[10];     // foo is array of 10 void: invalid (rule 5)
+void *foo;        // OK: foo is pointer to void
+void foo();       // OK: foo is function returning void
+~~~
+
+Declarations and declarators
+----------------------------
+
+What we have called a "declaration" so far was using a syntax
+construct with the basic type on the left, and the thing on the right
+with all the `*`, `[]` and `()` operators applied which can construct
+a derived type.
+
+That syntax is really called a **declarator**.
+
+What is really called a *declaration* in C is formed by using a
+declarator in combination with some [storage/linkage](#objectsinc)
+specifiers:
+
+  declaration = declarator + storage + linkage, followed by a semicolon.
+
+Of course, as seen previously the storage and linkage specifiers are
+optional (C will pick some storage and linkage for you if you don't
+choose any yourself). So all declarators followed by a semicolon
+("`;`") also happen to be valid declarations.
+
+### Declarator positions
+
+There are just 7 places where you can use declarators in C:
+
+- declarations/definitions in the global scope or in function scope;
+- function definitions;
+- function parameters;
+- member definitions in `struct` and `union`;
+- type alias definitions with `typedef`.
+- as **abstract declarators**:
+  - as argument to the `sizeof` operator;
+  - in the cast operator.
+
+Clarifications / notes:
+
+- when you write this: "`int foo(int x) { return x + 3; }`", the part
+  of this syntax before the opening brace "`int foo(int x)`" is a
+  declarator, but is not a declaration! A declaration is a declarator
+  followed by a semicolon, but here the declarator is followed by an
+  opening brace. A function definition is really not a declaration.
+
+- when you write "`int foo(int x)`", the part inside the parentheses
+  is the function parameter list. Each of the items in this
+  comma-separated list is itself a declarator. For example "`int x`"
+  here is a declarator too. However again it is not a declaration,
+  because it is not followed by a semicolon.
+
+- also, member definitions inside a `struct` or `union`, although they
+  are declarators followed by semicolons, are not declaration, because
+  a declaration must appear in the global scope or in function scope. The
+  braces around the member definitions are not a scope.
+
+### `typedef` is about defining type aliases
+
+We have used `typedef` many times already but it wasn't clearly stated:
+
+- the `typedef` syntax is  really the keyword "`typedef`" followed by a declarator.
+  - therefore, it may not contain any storage or linkage specifier.
+- a `typedef` declaration defines the name inside the declarator to be equal to the type of the declarator. (This is an equality at type level!)
+
+For example:
+
+~~~ c
+typedef char *(*(**blabla[][8])())[];
+blabla foo;
+~~~
+
+This defines the name `blabla` to be equal to the type "array of array
+of 8 pointer to pointer to function returning pointer to array of
+pointer to `char`".
+
+The following declaration "`blabla foo;`" is then equivalent to the
+`foo` declaration in the example section earlier.
+
+
+### Abstract declarators
+
+An *abstract declarator* is formed by a basic type followed by a
+declarator *without a name*.
+
+| Full declarator | Abstract declarator | Example cast syntax | Example `sizeof` syntax |
+|-----------------|---------------------|---------------------|-------------------------|
+| `int a`  | `int`    | `(int)x` | `sizeof int`
+| `int *a` | `int *`  | `(int*)x` | `sizeof (int*)`
+| `int a[10]` | `int [10]` | `(int [10])x` (note: the syntax is valid, but this cast is not valid, see note A below) | `sizeof (int [10])` (ok!)
+| `int a()` | `int ()` | `(int ())x` (see note A) | `sizeof (int ())` (see note B below)
+| `int *a[10]` | `int *[10]` | `(int *[10])x` (see note A) | `sizeof (int *[10])` (ok!)
+| `int (*a)[10]` | `int (*)[10]` | `(int (*)[10])x` (ok!) | `sizeof (int (*)[10])`
+| `int (*a)()` | `int (*)()` | `(int (*)())x` | `sizeof (int (*)())`
+| `int (*(*a)())()` | `int (*(*)())()` | `(int (*(*foo)())())x` | `sizeof (int (*(*)())())`
+| `char *(*(**a[][8])())[]` | `char *(*(**[][8])())[]` | `(char *(*(**[][8])())[])x` | `sizeof (char *(*(**[][8])())[])`
+
+Note A: it is not possible to cast an object to an array type. This
+will be covered in the next chapter.
+
+Note B: a function is an object, so it is possible to apply the
+`sizeof` operator on it. However, most C compilers do not know the
+size of functions at compile time, yet `sizeof` must produce a
+compile-time constant, so they often pick the arbitrary value "1" as
+result.
+
+Summary
+-------
+
+- there are 3 type derivations: "array of ...", "function returning ..." and "pointer to ..."
+- the construct to use a derived type is called a *declarator*.
+  - every declaration includes a declarator.
+- to read a declarator, start with the name, then follow operator precedence, then end with the basic type on the left.
+  - remember the operator precedence: postfix binds tighter than prefix.
+- derived types are restricted:
+  - no array of functions (but arrays of pointers to functions are ok).
+  - functions can't return arrays or functions directly (but can return pointers to them).
+  - only the leftmost array derivation can omit the number of elements.
+  - "`void`" can only be used in derivations.
+  - "`void`" can only be used with "function returning ..." and "pointer to ...", not "array of".
+- casts and `sizeof` use *abstract declarators*, which are simply declarators without a name.
+
+Type and value conversions
+==========================
+
+A *conversion* may occur when you use a designator with a certain type in a context where another type is expected.
+
+For example:
+
+~~~ c
+  int x = 123;
+  double y;
+  y = x; // int on the right, double on the left -> conversion
+~~~
+
+Conversion between numeric types
+--------------------------------
+
+| Start type | New type | Value fits in new type? | Result value | Safe? | Common? |
+|------------|----------|-------------|--------|-----|-----|
+| any non-struct / union | `_Bool` |  | 0 if the original value compares equal to 0, 1 otherwise | 😸  |  😸
+| `_Bool`    | any non-struct / union | | 0 or 1 | 😸 | 😸
+| | | | | | |
+| any integer / enum | any integer / enum | yes | same value  | 😸 | 😸😸😸
+| any integer / enum | unsigned integer | no | add original value to (max+1) of new type (causes wraparound) | 😸 | 😸😸😸
+| any integer / enum | signed integer, or enum | no | either some arbitrary value or a run-time error (no dead kittens though) | 😐 | ☹ ☹
+| | | | | | |
+| any float | any integer / enum | integral part fits | integral part (fractional part is discarded, number rounded towards zero) | 😸 | 😸😸😸
+| any float | any integer / enum | integral part does not fit | **... kittens die ...** (undefined behavior) | 🙀🙀 | ☹ ☹ ☹ 
+| any integer / float / enum | any float | yes | same value | 😸 | 😸😸😸
+| any integer / float / enum | any float | approximation fits | value of approximation | 😸 | 😸😸😸
+| any integer / float / enum | any float | approximation does not fit | **... kittens die ...** (undefined behavior) | 🙀🙀 | ☹ ☹ ☹ 
+| | | | | | |
+| any complex | any complex |  | result using separate conversion for the real and imaginary parts |  😸  | |
+| any integer / float / enum | any complex |  | result using conversion to the real type, with imaginary part set to 0 | 😸  | |
+| any complex | any integer / float / enum |  | result using conversion of real part, imaginary part discarded |  😸  | |
+
+You can give extra attention to the problematic cases in the table above:
+
+- if you convert an integer into a signed integer type and the value doesn't fit, the results are either unpredictable or a run-time error will occur.
+- if you convert to/from `float` or `double` and the result does not fit the target type, **kittens will die!** (undefined behavior)
+
+Conversion between pointer types
+--------------------------------
+
+| Start type | New type | Value fits in new type? | Result value | Safe? | Common? |
+|------------|----------|-------------|--------|-----|-----|
+| pointer to void | any pointer |  | same value; null pointers (that compare equal to 0) are preserved  | 😸 | 😸😸😸
+| any pointer | pointer to void |  | same value; null pointers perserved | 😸 | 😸😸😸
+| | | | | | |
+| any pointer to non-function object | any pointer to non-function object | yes (see note below) | same value; null pointers preserved | 😸 | 😸😸😸
+| any pointer to non-function object | any pointer to non-function object | no (see note below) | same value (!); null pointers preserved | 😐 |  😐
+| | | | | | |
+| any pointer to function | any pointer to function | | same value; null pointers preserved | 😐 | |
+
+Note: conversion between different pointer types to object types has some restrictions that have to do with alignment, mutability, etc.
+The rules are complex and not detailed here, but the rule of thumb is:
+- the conversion is possible, and
+- you can store or copy the result value, or convert the result to another type, however
+- if you try to use the resulting pointer in an expression with the indirection (dereference) operator, **kittens will die**.
+
+Mixed pointer / integer conversions
+-----------------------------------
+
+The following conversions are fraught with peril, because you can't predict their result:
+
+| Start type | New type | Value fits in new type? | Result value | Safe? | Common? |
+|------------|----------|-------------|--------|-----|-----|
+| any integer / enum | any pointer | yes (see note below) | if the value was 0, then the result is a null pointer; otherwise it is  implementation-defined, arbitrary, but can be converted back to integer type | 😐 |  |
+| any integer / enum | any pointer | no (see note below) | implementation-defined, arbitrary, cannot be converted back | 😐 |  |
+| any pointer | any integer / enum | yes | implementation-defined (in practice, often equal to the original value if the pointer value was initialized with an integer to start with, or 0 for null pointers) | 😐 |  |
+| any pointer | any integer / enum | no | **... kittens die ...** (undefined behavior) | 🙀🙀 |  |
+
+**Try to avoid them!**
+
+(They are mentioned here for completeness; you should only use them if
+you are absolutely sure you know what you are doing. Who does?
+Probably only compiler and operating system implementers.)
+
+Pseudo-conversions
+------------------
+
+These take a value and produce a new value unrelated to the original
+value. (You already know one of them!)
+
+| Start type | New type | Result value |
+|------------|----------|--------------|
+| any array  | any pointer  | address of first element |
+| any function | any pointer | address of function |
+
+In other words:
+
+~~~ c
+int a[10];
+int *p = (int*)a;   // ok! (you know this already)
+
+int foo();
+int (*p)() = foo;   // ok!
+void *q = foo;      // ok!
+int *r = (int*)foo; // ok (but beware)
+~~~
+
+Invalid conversions
+-------------------
+
+The following conversions are guaranteed to cause compile errors,
+which is a good thing (the compiler detects the error for you):
+
+| Start type | New type |
+|------------|----------|
+| any        | any struct / union not exactly equal to the start type
+| struct / union | any type not exactly equal to the start type
+| any pointer | any non-pointer, non-integer |
+| any non-pointer, non-integer | any pointer |
+| any pointer to function | any pointer to non-function object (not `void`)
+| any pointer to non-function object (not `void`) | any pointer to function
+
+Automatic and explicit conversions
+----------------------------------
+
+
+
+Summary
+-------
+
 Next topics
 ===========
 
@@ -4697,5 +5111,39 @@ Next topics
 - declarators
 - multi-dimensional arrays
 - varargs
+
+Weird things
+============
+
+- The indirection operator does what its name says it does: you apply it to
+  a designator with pointer type, and it gives you a designator for the referenced object.
+
+  Except in the one weird cases:
+
+  **Indirecting a designator with type "pointer to function" yields... the same operand.**
+
+  For example, after the declaration "`int (*p)();`"
+  the following expressions are all equivalent: `p`, `*p`, `**p`, `*** *** * ** * * ** p`
+
+  (In other words you cannot "access" the function with the indirection operator. It is still
+  possible to call it though, see below.)
+
+- The "function call" operator (in expressions, not in declarators!) does
+  what it says it does: you apply it to a designator with function type, and it calls
+  that function.
+
+  Except in the one weird case: **a designator with type pointer to function is a valid function call expression**, too.
+
+  It simply calls the referenced function.
+
+  For example, after the declaration "`int (*p)();`"
+  both  `(*p)()` and `p()` are equivalent ways to call the function referenced
+  to by `p`.
+
+  This, together with the rule above, also implies the following are equivalent:
+  `p()`, `(*p)()`, `(*** * ** ** * ** * p)()`.
+
+Weird things happen in C.
+
 
 <!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js"></script><script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
