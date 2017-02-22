@@ -16,10 +16,12 @@ Requirements
 Your sorting program must be named ``mysort`` and its basic operation is as follows:
 
 - it reads input numbers from its standard input;
-- it prints the same numbers in sorted order on its standard output.
+- it prints the same numbers in sorted order on its standard output,
+  one number per line.
 
-Your program must perform sorting by maintaining a sorted list in memory
-and maintaining this order while reading the input (insertion sort).
+Numbers in the input are separated by white space. Your program must
+perform sorting by maintaining a sorted list in memory and maintaining
+this order while reading the input (insertion sort).
 
 You must submit your work as a tarball [#]_. Next to the source code,
 your archive must contain a text file file named “``AUTHORS``”
