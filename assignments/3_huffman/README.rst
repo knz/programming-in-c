@@ -2,8 +2,8 @@
  Assignment 3: Binary trees and Huffman coding
 ===============================================
 
-:Date: xxx
-:Deadline: xxx
+:Date: 22-02-2017
+:Deadline: 03-03-2017 23:59
 
 Objectives
 ==========
