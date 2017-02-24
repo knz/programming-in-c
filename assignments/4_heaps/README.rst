@@ -44,8 +44,7 @@ To translate this into a program, you will work with the following:
 - the program will work by running a loop, performing the following steps:
 
   1. accept all the patients "waiting at the door" at that time: read
-     all the input lines until you reach the dot on a separate line.
-     The dot separates the hours in a day.
+     all the input lines until you reach a "``.``" on a separate line.
 
   2. place the patients in a priority queue ordered by name;
 
@@ -57,10 +56,11 @@ To translate this into a program, you will work with the following:
   5. make the patient leave: print the patient's name on the standard
      output and remove the patient from the queue.
 
-  6. print a '.' on a single line to signal the end of the hour long session.
+  6. print a "``.``" on a single line to signal the end of the hour long session.
 
-- if there are no patients the doctor will do nothing during
-  that complete hour's session.
+- if there are no patients to pick, the doctor will do nothing during
+  the complete session, but you should still print a "``.``" to
+  show that time has passed.
 - "at the end of the day" (after 10 iterations of the loop,
   so 10 hours later), "all patients leave": print
   the names of all patients already in the queue in alphabetical order
@@ -77,7 +77,7 @@ being treated:
     +-------------+------------+
     | Input       | Output     |
     +=============+============+
-    |  Carl 22    |            |
+    |  Carl 22    | Albert     |
     |             |            |
     |  Bob 68     |            |
     |             |            |
@@ -85,11 +85,7 @@ being treated:
     |             |            |
     |  .          | .          |
     +-------------+------------+
-    |  Barbara 40 | Albert     |
-    |             |            |
-    |  .          | .          |
-    +-------------+------------+
-    |             | Barbara    |
+    |  Barbara 40 | Barbara    |
     |             |            |
     |  .          | .          |
     +-------------+------------+
@@ -103,25 +99,23 @@ being treated:
     +-------------+------------+
     |  .          | .          |
     +-------------+------------+
-    |  Alice 28   |            |
-    |             |            |
-    |             | .          |
+    |  .          | .          |
     +-------------+------------+
-    |  .          | Alice      |
-    |             |            |
-    |             | .          |
+    |  .          | .          |
     +-------------+------------+
-    |  Jim 30     |            |
+    |  Alice 28   | Alice      |
+    |             |            |
+    |  .          | .          |
+    +-------------+------------+
+    |  .          | .          |
+    +-------------+------------+
+    |  Jim 30     | Jim        |
     |             |            |
     |  Tom 31     |            |
     |             |            |
     |  Zoe 29     |            |
     |             |            |
     |  .          | .          |
-    +-------------+------------+
-    |  .          | Jim        |
-    |             |            |
-    |             | .          |
     +-------------+------------+
     |             | Tom        |
     |             |            |
@@ -167,5 +161,35 @@ but only if you have obtained a minimum of 5 points on the list above already:
 - +1.5pt if your ``queue`` program also accepts a duration of
   the patient's appointment on the input (after the age), and keeps
   the doctor busy for that duration when that patient is picked.
+  This is shown in the following example:
 
-TODO: add example which shows the effect of the duration field.
+  .. table::
+
+      +-------------+------------+
+      | Input       | Output     |
+      +=============+============+
+      | Zoe 22 4    |            |
+      |             |            |
+      | .           | .          |
+      +-------------+------------+
+      | Martha 50 1 |            |
+      |             |            |
+      | .           | .          |
+      +-------------+------------+
+      | .           | .          |
+      +-------------+------------+
+      | Albert 11 1 | Zoe        |
+      |             |            |
+      | .           | .          |
+      +-------------+------------+
+      | .           | Albert     |
+      |             |            |
+      |             | .          |
+      +-------------+------------+
+      | .           | Martha     |
+      |             |            |
+      |             | .          |
+      +-------------+------------+
+      |       etc..              |
+      +-------------+------------+
+
