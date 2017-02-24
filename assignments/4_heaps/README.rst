@@ -1,5 +1,5 @@
 =========================================
- Assignment 5: Heaps and priority queues
+ Assignment 4: Heaps and priority queues
 =========================================
 
 :Date: xxx
@@ -40,27 +40,92 @@ To translate this into a program, you will work with the following:
 
 - the program receives the incoming patients on its standard input.
   Each patient is given as a line of input text containing the patient's
-  name followed by his/her age, separated by spaces.
-- the program will work by running a perpetual loop, performing the following steps:
+  first name followed by his/her age, separated by a space character.
+- the program will work by running a loop, performing the following steps:
 
-  1. accept all the patients "waiting at the door": read all the input lines
-     available so far on the standard input;
+  1. accept all the patients "waiting at the door" at that time: read
+     all the input lines until you reach the dot on a separate line.
+     The dot separates the hours in a day.
 
   2. place the patients in a priority queue ordered by name;
 
   3. pick the first patient in alphabetic order using
      the priority queue;
 
-  4. wait one second;
+  4. treat the patient;
 
   5. make the patient leave: print the patient's name on the standard
      output and remove the patient from the queue.
 
-- "every day" (every 10 seconds), before step 1, "all patients leave":
-  print the names of all patients already in the queues and empty the
-  queues.
+  6. print a '.' on a single line to signal the end of the hour.
 
-(The durations in this assignment are accelerated to ease your testing.)
+- if there are no patients the doctor will do nothing during
+  that hour.
+- "at the end of the day" (after 10 iterations of the loop,
+  so 10 hours later), "all patients leave": print
+  the names of all patients already in the queue in alphabetical order
+  and exit.
+
+A typical day in the doctors office is shown below. Carl, Bob and Albert
+show up early and get treated by the doctor in alphabetical order.
+Jim, Tom and Zoe arrive late in the day, so Tom and Zoe leave without
+being treated:
+
+.. table::
+
+    +-------------+------------+
+    | Input       | Output     |
+    +=============+============+
+    |  Carl 22    |            |
+    |             |            |
+    |  Bob 68     |            |
+    |             |            |
+    |  Albert 35  |            |
+    |             |            |
+    |  .          | .          |
+    +-------------+------------+
+    |  Barbara 40 | Albert     |
+    |             |            |
+    |  .          | .          |
+    +-------------+------------+
+    |             | Barbara    |
+    |             |            |
+    |  .          | .          |
+    +-------------+------------+
+    |             | Bob        |
+    |             |            |
+    |  .          | .          |
+    +-------------+------------+
+    |             | Carl       |
+    |             |            |
+    |  .          | .          |
+    +-------------+------------+
+    |  .          | .          |
+    +-------------+------------+
+    |  Alice 28   |            |
+    |             |            |
+    |             | .          |
+    +-------------+------------+
+    |  .          | Alice      |
+    |             |            |
+    |             | .          |
+    +-------------+------------+
+    |  Jim 30     |            |
+    |             |            |
+    |  Tom 31     |            |
+    |             |            |
+    |  Zoe 29     |            |
+    |             |            |
+    |  .          | .          |
+    +-------------+------------+
+    |  .          | Jim        |
+    |             |            |
+    |             | .          |
+    +-------------+------------+
+    |             | Tom        |
+    |             |            |
+    |             | Zoe        |
+    +-------------+------------+
 
 Getting started
 ===============
@@ -96,7 +161,10 @@ but only if you have obtained a minimum of 5 points on the list above already:
 - +1.5pt if your ``queue`` program accepts a single command-line
   argument ``-y`` which causes, when specified, to change all the
   patient processing based on age to pick the youngest patient instead
-  of the oldest patient.
-- +1.5pt if your ``queue`` program also accepts the desired duration of
+  of alphabetical order. Patients leaving at the end of the day are
+  also sorted by increasing age.
+- +1.5pt if your ``queue`` program also accepts a duration of
   the patient's appointment on the input (after the age), and keeps
   the doctor busy for that duration when that patient is picked.
+
+TODO: add example which shows the effect of the duration field.
