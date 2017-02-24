@@ -57,17 +57,18 @@ To translate this into a program, you will work with the following:
   5. make the patient leave: print the patient's name on the standard
      output and remove the patient from the queue.
 
-  6. print a '.' on a single line to signal the end of the hour.
+  6. print a '.' on a single line to signal the end of the hour long session.
 
 - if there are no patients the doctor will do nothing during
-  that hour.
+  that complete hour's session.
 - "at the end of the day" (after 10 iterations of the loop,
   so 10 hours later), "all patients leave": print
   the names of all patients already in the queue in alphabetical order
   and exit.
 
-A typical day in the doctors office is shown below. Carl, Bob and Albert
-show up early and get treated by the doctor in alphabetical order.
+A typical day of 10 hour long sessions in the doctors office is shown
+below. Carl, Bob and Albert show up early and get treated by the
+doctor in alphabetical order.
 Jim, Tom and Zoe arrive late in the day, so Tom and Zoe leave without
 being treated:
 
@@ -150,7 +151,7 @@ Your grade starts from 0, and the following tests determine your grade:
 - +0,5pt if your source code builds without errors and you have modified ``heap.c`` in any way.
 - +2pt if your priority queue API processes insertions and removal properly.
 - +3pt if your ``queue`` program orders the patients properly.
-- +1pt if your ``queue`` program properly forces every patient to leave every 10s.
+- +1pt if your ``queue`` program properly forces every patient to leave at the end of the day in the correct order.
 - -0,5pt if your ``queue`` program misbehaves if no patient arrived since the last patient left.
 - -1pt if ``valgrind`` reports errors while running your program.
 - -1pt if ``clang -W -Wall`` reports warnings when compiling your code.
