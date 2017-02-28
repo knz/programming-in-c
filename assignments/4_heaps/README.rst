@@ -18,6 +18,10 @@ You will construct a program ``queue`` that demonstrates your heap and
 priority queue API.  The required behavior of the program is given in
 the following section.
 
+It is strongly recommended to implement your heap structure as an
+array. You may make the assumption that the current waiting queue will
+never be larger than 32 patients.
+
 You must submit your work as a tarball [#]_. Next to the source code,
 your archive must contain a text file file named “``AUTHORS``”
 containing your name and Student ID(s).
@@ -161,7 +165,9 @@ but only if you have obtained a minimum of 5 points on the list above already:
 - +1.5pt if your ``queue`` program also accepts a duration of
   the patient's appointment on the input (after the age), and keeps
   the doctor busy for that duration when that patient is picked.
-  This is shown in the following example:
+  If a patient is still being treated at the end of the day their
+  treatment is not completed and the patient is forced to leave first.
+  An example with the duration extension is shown below:
 
   .. table::
 
