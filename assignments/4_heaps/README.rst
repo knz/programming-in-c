@@ -19,8 +19,9 @@ priority queue API.  The required behavior of the program is given in
 the following section.
 
 It is strongly recommended to implement your heap structure as an
-array. You may make the assumption that the current waiting queue will
-never be larger than 32 patients.
+array. We provide a dynamic array implementation in ``array.h`` and
+``array.c``. We advise you to use these array functions to implement
+your heap.
 
 You must submit your work as a tarball [#]_. Next to the source code,
 your archive must contain a text file file named “``AUTHORS``”
