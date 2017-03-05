@@ -2,8 +2,8 @@
  Assignment 4: Heaps and priority queues
 =========================================
 
-:Date: xxx
-:Deadline: xxx
+:Date: 3-03-2017
+:Deadline: 11-03-2017 23:59
 
 Objectives
 ==========
@@ -72,7 +72,7 @@ To translate this into a program, you will work with the following:
   and exit.
 
 A typical day of 10 hour long sessions in the doctors office is shown
-below. Carl, Bob and Albert show up early and get treated by the
+below. Carl, Bob, Albert and Barbara show up early and get treated by the
 doctor in alphabetical order.
 Jim, Tom and Zoe arrive late in the day, so Tom and Zoe leave without
 being treated:
@@ -139,7 +139,7 @@ Getting started
 
 4. Implement the data structure in ``heap.c``.
 
-5. Implement the missing code in ``queue``.
+5. Implement the missing code in ``main.c``.
 
 Grading
 =======
