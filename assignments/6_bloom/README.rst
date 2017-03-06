@@ -2,8 +2,8 @@
  Assignment 6: Bloom filters
 =============================
 
-:Date: xxx
-:Deadline: xxx
+:Date: 6-03-2017
+:Deadline: 23-03-2017
 
 Objectives
 ==========
@@ -43,6 +43,9 @@ standard input.  The input can be arbitrarily large: you cannot assume
 a maximum number of lines in the input. Each line of input will
 contain only printable characters, in particular there will be no nul
 character in the input.
+
+.. Should we give a limit on line length? Or just give them the
+   my_get_line() function from the huffman assignment?
 
 Your program must print out the *unique* input items as-is on its
 standard output, as soon as possible after they are read. A unique
@@ -91,6 +94,9 @@ Overall structure of the assignment
    The quality of the Bloom filter you will use in step 3 is
    dependent on how different the k functions are from each other.
 
+.. Do we need hash_init() (referred to in hash()) or will hash_alloc
+   initialise the hash functions?
+
 3. Implement the `dedup` program using a Bloom filter based on your
    array and hash function API from the previous two steps.
 
@@ -118,10 +124,12 @@ Your grade starts from 0, and the following tests determine your grade:
   a different value when applied to an empty string as input.
 - +1pt if your array API works properly.
 - +2pt if your ``dedup`` program works minimally:
+
   - it never outputs two times the same item;
   - given an input that contains only *n* items, that are all unique, your program
     reproduces a non-zero fraction of *n* output items, regardless of the value of *n*.
+
 - +0-3pt depending on the false positive rate of your
   implementation (more output items overall = better program).
-- +1pt if your implementation of the array API is using less than one byte per
-  position overall.
+- +1pt if your implementation of the array API is using less than one
+  byte per position overall.
