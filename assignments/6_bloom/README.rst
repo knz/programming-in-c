@@ -30,19 +30,19 @@ program is able to detect duplicates.
 Program arguments
 =================
 
-Your program must accept two positional arguments on the command line:
+Your program must accept multiple positional arguments on the command line:
 
-- *k*, the number of hash functions to use;
-- *n*, the size of the bloom filter.
+- *k*,  the number of hash functions to use;
+- *n*,  the size of the bloom filter.
+- *ks*, `k` number of integers used as parameter for your `k` hash functions.
 
 Input / output definition
 =========================
 
-The input items will be provided as separate lines of text on the
-standard input.  The input can be arbitrarily large: you cannot assume
-a maximum number of lines in the input. Each line of input will
-contain only printable characters, in particular there will be no nul
-character in the input.
+The input items will be provided as zero or more separate lines of text on the
+standard input. The input can be arbitrarily large: you cannot assume a maximum
+number of lines in the input. Each line of input will contain only printable
+characters, in particular there will be no nul character in the input.
 
 .. Should we give a limit on line length? Or just give them the
    my_get_line() function from the huffman assignment?
@@ -72,8 +72,9 @@ When there are no more input lines available to read (if that ever happens),
 Your program must then:
 
 1. print a last line containing the number of input items read so far
-   and the number of output lines produced so far;
-2. terminate with exit code 0.
+   and, separated by a single space, the number of output lines produced so far.
+   This line should be printed to `stderr`;
+2. terminate with exit code `EXIT_SUCCESS`.
 
 For example with the input above the complete output would be::
 
@@ -100,13 +101,19 @@ Overall structure of the assignment
 3. Implement the `dedup` program using a Bloom filter based on your
    array and hash function API from the previous two steps.
 
-4. Iterate on step 2 (hash functions) to see if you can decrease your
-   false positive rate (number of items your algorithm incorrectly
-   decides are duplicates).
+4. Find good values for the `ks` parameter of your `dedup` program and store
+   these, separated by spaces, in a file called `PARAMS`. Please note that you
+   are free to determine the format of these (and even type) parameters. You
+   should however document this if you do so.
 
-5. (Optionally) Improve your implementation of the array API, taking advantage
+5. Iterate on step 2 (hash functions) and 4 to see if you can decrease your
+   false positive rate (number of items your algorithm incorrectly decides are
+   duplicates).
+
+6. (Optionally) Improve your implementation of the array API, taking advantage
    of your knowledge that there are only two possible values at
-   each position. Hint:
+   each position. Please note that you should try to assume as little as
+   possible about the machine on which the code is use. Hint:
    https://en.wikipedia.org/wiki/Bit_array
 
 While you are iterating on step 4, keep a journal of your results and
