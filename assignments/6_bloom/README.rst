@@ -34,7 +34,8 @@ Your program must accept multiple positional arguments on the command line:
 
 - *k*,  the number of hash functions to use;
 - *n*,  the size of the bloom filter.
-- *ks*, `k` number of integers used as parameter for your `k` hash functions.
+- *ks*, `k` number of parameters passed to be passed to the hash function, every
+  parameter can contain multiple arguments of different types.
 
 Input / output definition
 =========================
