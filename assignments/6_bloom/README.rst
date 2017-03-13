@@ -1,8 +1,8 @@
 =============================
- Assignment 6: Bloom filters
+ Assignment 5: Bloom filters
 =============================
 
-:Date: 6-03-2017
+:Date: 13-03-2017
 :Deadline: 22-03-2017 23:59
 
 Objectives
@@ -14,10 +14,10 @@ that uses a bloom filter to detect duplicates in its input.
 Requirements
 ============
 
-You must write a program `dedup` which can process a very large number
+You must write a program `dups` which can process a very large number
 of lines on its standard input (containing possibly billions of input
-lines) and reproduces its input on its standard output with the least
-number of duplicates.
+lines) and reproduces its input on its standard output without any duplicates.
+The program may drop a small fraction of the input which are not duplicates.
 
 Your solution must use a `Bloom filter`__ to detect duplicate items.
 
@@ -25,7 +25,7 @@ Your solution must use a `Bloom filter`__ to detect duplicate items.
 
 The new aspect in this assignment is that there is not one single good
 answer: a part of your grade will be proportional to "how well" your
-program is able to detect duplicates.
+program is able to reproduce the original input without duplicates.
 
 Program arguments
 =================
@@ -34,8 +34,10 @@ Your program must accept multiple positional arguments on the command line:
 
 - *k*,  the number of hash functions to use;
 - *n*,  the size of the bloom filter.
-- *ks*, `k` number of parameters passed to be passed to the hash function, every
-  parameter can contain multiple arguments of different types.
+- *ks*, a set of `k` parameters to be passed to initialize the `k` different
+  hash functions. Each parameter can be a single value or a combination of
+  multiple arguments of different types, separated in a format of your
+  choosing.
 
 Input / output definition
 =========================
@@ -43,7 +45,8 @@ Input / output definition
 The input items will be provided as zero or more separate lines of text on the
 standard input. The input can be arbitrarily large: you cannot assume a maximum
 number of lines in the input. Each line of input will contain only printable
-characters, in particular there will be no nul character in the input.
+characters, in particular there will be no nul character in the input, and will
+contain at most 1024 characters.
 
 .. Should we give a limit on line length? Or just give them the
    my_get_line() function from the huffman assignment?
@@ -91,18 +94,19 @@ Overall structure of the assignment
    `bitvec.h`. Your first version can be very simple, and use standard
    C arrays. This would be a correct implementation.
 
-2. Implement the hash function API defined in `hash.h`. Note that this
-   suggests you to define a *family* of k hash functions (from 0 to k-1).
+2. Implement the hash function API defined in `hash.h`, which requires you to
+   define a *family* of k hash functions (from 0 to k-1).
    The quality of the Bloom filter you will use in step 3 is
    dependent on how different the k functions are from each other.
+   *Note: Hash functions will be covered in lecture on Thursday.*
 
 .. Do we need hash_init() (referred to in hash()) or will hash_alloc
    initialise the hash functions?
 
-3. Implement the `dedup` program using a Bloom filter based on your
+3. Implement the `dups` program using a Bloom filter based on your
    array and hash function API from the previous two steps.
 
-4. Find good values for the `ks` parameter of your `dedup` program and store
+4. Find good values for the `ks` parameter of your `dups` program and store
    these, separated by spaces, in a file called `PARAMS`. Please note that you
    are free to determine the format of these (and even type) parameters. You
    should however document this if you do so.
@@ -131,7 +135,7 @@ Your grade starts from 0, and the following tests determine your grade:
 - +2pt if your hash function API works properly, and the k functions return
   a different value when applied to an empty string as input.
 - +1pt if your array API works properly.
-- +2pt if your ``dedup`` program works minimally:
+- +2pt if your ``dups`` program works minimally:
 
   - it never outputs two times the same item;
   - given an input that contains only *n* items, that are all unique, your program
