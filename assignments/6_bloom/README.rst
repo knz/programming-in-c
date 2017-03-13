@@ -98,31 +98,39 @@ Overall structure of the assignment
    define a *family* of k hash functions (from 0 to k-1).
    The quality of the Bloom filter you will use in step 3 is
    dependent on how different the k functions are from each other.
-   *Note: Hash functions will be covered in lecture on Thursday.*
+   *Note: Hash functions and Bloom filters will be covered in lecture on
+   Thursday.*
 
 .. Do we need hash_init() (referred to in hash()) or will hash_alloc
    initialise the hash functions?
 
-3. Implement the `dups` program using a Bloom filter based on your
-   array and hash function API from the previous two steps.
+3. Implement a Bloom filter based on your array and hash function API from
+   the previous two steps. You may build the Bloom filter directly into
+   `main.c` or create a separate file with its own header API. *Be sure to
+   include any additional files in the Makefile under the bloom_submit.tar.gz
+   target, so they will be included in your tarball.*
 
-4. Find good values for the `ks` parameter of your `dups` program and store
-   these, separated by spaces, in a file called `PARAMS`. Please note that you
-   are free to determine the format of these (and even type) parameters. You
-   should however document this if you do so.
+4. Implement the `dups` program to read the input from standard input and
+   detect potential duplicates using your Bloom filter, printing the
+   non-duplicate entries to standard output.
 
-5. Iterate on step 2 (hash functions) and 4 to see if you can decrease your
+5. Find good values for the `ks` parameter of your `dups` program and store
+   these, separated by spaces, in the file called `PARAMS`. Please note that
+   you are free to determine the format of these (and even type) parameters.
+   You should however document this, if you do so.
+
+6. Iterate on step 2 (hash functions) and 5 to see if you can decrease your
    false positive rate (number of items your algorithm incorrectly decides are
    duplicates).
 
-6. (Optionally) Improve your implementation of the array API, taking advantage
+7. (Optionally) Improve your implementation of the array API, taking advantage
    of your knowledge that there are only two possible values at
    each position. Please note that you should try to assume as little as
    possible about the machine on which the code is use. Hint:
    https://en.wikipedia.org/wiki/Bit_array
 
-While you are iterating on step 4, keep a journal of your results and
-your intermediate implementations to present in your PAV report.
+**Informatics only:** While you are iterating in step 6, keep a journal of your
+results and your intermediate implementations to present in your PAV report.
 
 Grading
 =======
@@ -137,9 +145,9 @@ Your grade starts from 0, and the following tests determine your grade:
 - +1pt if your array API works properly.
 - +2pt if your ``dups`` program works minimally:
 
-  - it never outputs two times the same item;
-  - given an input that contains only *n* items, that are all unique, your program
-    reproduces a non-zero fraction of *n* output items, regardless of the value of *n*.
+  - it never outputs the same item more than once.
+  - given an input that contains *n* unique items, your program reproduces a
+    non-zero fraction of *n* output items, regardless of the value of *n*.
 
 - +0-3pt depending on the false positive rate of your
   implementation (more output items overall = better program).
