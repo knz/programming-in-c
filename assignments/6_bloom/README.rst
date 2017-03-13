@@ -107,8 +107,9 @@ Overall structure of the assignment
 3. Implement a Bloom filter based on your array and hash function API from
    the previous two steps. You may build the Bloom filter directly into
    `main.c` or create a separate file with its own header API. *Be sure to
-   include any additional files in the Makefile under the bloom_submit.tar.gz
-   target, so they will be included in your tarball.*
+   add all additional files to the Makefile under all the relevant targets,
+   including the bloom_submit.tar.gz target so the files will be included in
+   your tarball.*
 
 4. Implement the `dups` program to read the input from standard input and
    detect potential duplicates using your Bloom filter, printing the
@@ -126,7 +127,7 @@ Overall structure of the assignment
 7. (Optionally) Improve your implementation of the array API, taking advantage
    of your knowledge that there are only two possible values at
    each position. Please note that you should try to assume as little as
-   possible about the machine on which the code is use. Hint:
+   possible about the machine on which the code is used. Hint:
    https://en.wikipedia.org/wiki/Bit_array
 
 **Informatics only:** While you are iterating in step 6, keep a journal of your
