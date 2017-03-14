@@ -91,10 +91,10 @@ Overall structure of the assignment
 ===================================
 
 1. Implement a first version of the array API defined in
-   `bitvec.h`. Your first version can be very simple, and use standard
+   ``bitvec.h``. Your first version can be very simple, and use standard
    C arrays. This would be a correct implementation.
 
-2. Implement the hash function API defined in `hash.h`, which requires you to
+2. Implement the hash function API defined in ``hash.h``, which requires you to
    define a *family* of k hash functions (from 0 to k-1).
    The quality of the Bloom filter you will use in step 3 is
    dependent on how different the k functions are from each other.
@@ -106,19 +106,21 @@ Overall structure of the assignment
 
 3. Implement a Bloom filter based on your array and hash function API from
    the previous two steps. You may build the Bloom filter directly into
-   `main.c` or create a separate file with its own header API. *Be sure to
-   add all additional files to the Makefile under all the relevant targets,
-   including the bloom_submit.tar.gz target so the files will be included in
-   your tarball.*
+   ``main.c`` or create a separate file ``bloom.c`` with its own header API
+   ``bloom.h`` (+0.5pt for separate files). *Be sure to add all
+   additional files to the Makefile under all the relevant targets, including
+   the bloom_submit.tar.gz target so the files will be included in your
+   tarball.*
 
 4. Implement the `dups` program to read the input from standard input and
    detect potential duplicates using your Bloom filter, printing the
    non-duplicate entries to standard output.
 
 5. Find good values for the `ks` parameter of your `dups` program and store
-   these, separated by spaces, in the file called `PARAMS`. Please note that
-   you are free to determine the format of these (and even type) parameters.
-   You should however document this, if you do so.
+   these, separated by spaces, in the file called ``PARAMS``. Please note that
+   you are free to determine the format (and even type) of these parameters.
+   This does require you edit the behaviour of the ``init_ks`` function to
+   match your format. You should document this, if you do so.
 
 6. Iterate on step 2 (hash functions) and 5 to see if you can decrease your
    false positive rate (number of items your algorithm incorrectly decides are
@@ -142,11 +144,15 @@ Your grade starts from 0, and the following tests determine your grade:
 - +0,5pt if your source code builds without errors and you have
   modified ``hash.c``, ``main.c`` or ``bitvec.c`` in any way.
 - +2pt if your hash function API works properly, and the k functions return
-  a different value when applied to an empty string as input.
+  a different value when applied to an empty string as input. Additionally, you
+  have provided at least 10 initialization parameters in the ``PARAMS`` file to
+  test your functions.
 - +1pt if your array API works properly.
-- +2pt if your ``dups`` program works minimally:
+- +0.5pt if your Bloom filter is written in a separate files ``bloom.c`` and
+  ``bloom.h``.
+- +2pt if your `dups` program works minimally:
 
-  - it never outputs the same item more than once.
+  - the program never outputs the same item more than once.
   - given an input that contains *n* unique items, your program reproduces a
     non-zero fraction of *n* output items, regardless of the value of *n*.
 
@@ -154,3 +160,4 @@ Your grade starts from 0, and the following tests determine your grade:
   implementation (more output items overall = better program).
 - +1pt if your implementation of the array API is using less than one
   byte per position overall.
+
