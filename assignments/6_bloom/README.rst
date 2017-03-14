@@ -140,18 +140,18 @@ Grading
 
 Your grade starts from 0, and the following tests determine your grade:
 
-- +0,5pt if you have submitted an archive in the right format with an ``AUTHORS`` file.
-- +0,5pt if your source code builds without errors and you have
+- +0.5pt if you have submitted an archive in the right format with an ``AUTHORS`` file.
+- +0.5pt if your source code builds without errors and you have
   modified ``hash.c``, ``main.c`` or ``bitvec.c`` in any way.
+- +1pt if your array API works properly.
 - +2pt if your hash function API works properly, and the k functions return
   a different value when applied to an empty string as input. Additionally, you
-  have provided at least 10 initialization parameters in the ``PARAMS`` file to
-  test your functions.
-- +1pt if your array API works properly.
+  have provided at least 10 different initialization parameters in the
+  ``PARAMS`` file to test your functions.
 - +0.5pt if your Bloom filter is written in a separate files ``bloom.c`` and
   ``bloom.h``.
 - +2pt if your `dups` program works minimally:
-
+ 
   - the program never outputs the same item more than once.
   - given an input that contains *n* unique items, your program reproduces a
     non-zero fraction of *n* output items, regardless of the value of *n*.
