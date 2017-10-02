@@ -39,7 +39,7 @@ You must submit your work as a tarball [#]_. Next to the source code,
 your archive must contain a text file file named “``AUTHORS``”
 containing your name and Student ID.
 
-.. [#] http://lmgtfy.com/?q=how+to+make+a+tarball
+.. [#] ``make tarball`` will create the tarball for you.
 
 Details on the input and output formats
 =======================================
@@ -76,13 +76,13 @@ Example::
     0
 
     # Stats go to stderr, result to stdout.
-    $ ./infix2rpn "(3+2)/3"  2>/dev/null
+    $ ./infix2rpn "(3+2)/3"  2> /dev/null
     3 2 + 3 /
-    $ ./infix2rpn "(3+2)/3"  >/dev/null
+    $ ./infix2rpn "(3+2)/3"  > /dev/null
     stats 3 3 2
 
     # Checking that the exit status is correct in case of error
-    $ ./infix2rpn "blabla"  >/dev/null 2>&1; echo $?
+    $ ./infix2rpn "blabla"  > /dev/null 2>&1; echo $?
     1
 
 Getting started
@@ -106,7 +106,7 @@ Getting started
 .. hint:: You will not need to analyze numbers and determine the value
    of each number on the input. (Of course, you can do it, but it is not needed
    to achieve a correct solution. The simple algorithm can look at digits
-   individually and then forget about them.) Check you the links referenced
+   individually and then forget about them.) Check the links referenced
    at the end of the assignment!
 
 Grading
