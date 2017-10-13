@@ -2650,7 +2650,7 @@ switch(number) {
 
 The general syntax for this pattern is:
 
-~~~
+~~~c
 switch (<variable>) {
    case <const1>: <action1>; break;
    case <const2>: <action2>; break;
@@ -2664,14 +2664,14 @@ If you need to use the same action for multiple constants, this is possible by s
 
 For example:
 
-~~~
+~~~c
 switch (<variable>) {
   case <const1>:
-  case <const2>: <common action>; break;
+  case <const2>: <common_action>; break;
 
   case <const3>:
   case <const4>:
-  case <const5>: <common action>; break;
+  case <const5>: <common_action>; break;
 
   ...
 }
