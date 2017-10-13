@@ -2338,6 +2338,7 @@ The heap is a memory space that is separate from the function-local variables, a
 How to do this? Like this:
 
 ~~~c
+#include <stdio.h>
 #include <stdlib.h>
 ref_to(int) square(int x) {
 
@@ -2349,7 +2350,7 @@ ref_to(int) square(int x) {
    deref(result) = x * x;
 
    // This is now valid:
-   return ref(result);
+   return result;
 }
 
 int main() {
@@ -2415,7 +2416,7 @@ ref_to(int) square(int x) {
    deref(result) = x * x;
 
    // This is now valid:
-   return ref(result);
+   return result;
 }
 
 int main() {
