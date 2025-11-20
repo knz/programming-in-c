@@ -14,7 +14,7 @@ that uses a bloom filter to detect duplicates in its input.
 Requirements
 ============
 
-You must write a program `dups` which can process a very large number
+You must write a program ``dups`` which can process a very large number
 of lines on its standard input (containing possibly billions of input
 lines) and reproduces its input on its standard output without any duplicates.
 The program may drop a small fraction of the input which are not duplicates.
@@ -34,7 +34,7 @@ Your program must accept multiple positional arguments on the command line:
 
 - *k*,  the number of hash functions to use;
 - *n*,  the size of the bloom filter.
-- *ks*, a set of `k` parameters to be passed to initialize the `k` different
+- *ks*, a set of ``k`` parameters to be passed to initialize the ``k`` different
   hash functions. Each parameter can be a single value or a combination of
   multiple arguments of different types, separated in a format of your
   choosing.
@@ -77,8 +77,8 @@ Your program must then:
 
 1. print a last line containing the number of input items read so far
    and, separated by a single space, the number of output lines produced so far.
-   This line should be printed to `stderr`;
-2. terminate with exit code `EXIT_SUCCESS`.
+   This line should be printed to ``stderr``;
+2. terminate with exit code ``EXIT_SUCCESS``.
 
 For example with the input above the complete output would be::
 
@@ -112,11 +112,11 @@ Overall structure of the assignment
    the bloom_submit.tar.gz target so the files will be included in your
    tarball.*
 
-4. Implement the `dups` program to read the input from standard input and
+4. Implement the ``dups`` program to read the input from standard input and
    detect potential duplicates using your Bloom filter, printing the
    non-duplicate entries to standard output.
 
-5. Find good values for the `ks` parameter of your `dups` program and store
+5. Find good values for the ``ks`` parameter of your ``dups`` program and store
    these, separated by spaces, in the file called ``PARAMS``. Please note that
    you are free to determine the format (and even type) of these parameters.
    This does require you edit the behaviour of the ``init_ks`` function to
@@ -150,7 +150,7 @@ Your grade starts from 0, and the following tests determine your grade:
   ``PARAMS`` file to test your functions.
 - +0.5pt if your Bloom filter is written in a separate files ``bloom.c`` and
   ``bloom.h``.
-- +2pt if your `dups` program works minimally:
+- +2pt if your ``dups`` program works minimally:
  
   - the program never outputs the same item more than once.
   - given an input that contains *n* unique items, your program reproduces a
@@ -161,3 +161,15 @@ Your grade starts from 0, and the following tests determine your grade:
 - +1pt if your implementation of the array API is using less than one
   byte per position overall.
 
+----
+
+Copyright and licensing
+=======================
+
+Copyright © 2017, `Raphael Poss <https://raphaelposs.com>`__.  Permission is granted to
+distribute, reuse and modify this document and other documents for the
+Systems Programming course by the same author according to the terms
+of the Creative Commons Attribution-ShareAlike 4.0 International
+License.  To view a copy of this license, visit
+`http://creativecommons.org/licenses/by-sa/4.0/
+<http://creativecommons.org/licenses/by-sa/4.0/>`_.

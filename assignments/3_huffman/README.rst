@@ -153,3 +153,16 @@ Algorithm to encode the data:
 3. Translate the tree to an encoding table
 4. Use the encoding table to encode the data
    - This is where the ``encode`` programs emits the encoded output.
+
+----
+
+Copyright and licensing
+=======================
+
+Copyright © 2017, `Raphael Poss <https://raphaelposs.com>`__.  Permission is granted to
+distribute, reuse and modify this document and other documents for the
+Systems Programming course by the same author according to the terms
+of the Creative Commons Attribution-ShareAlike 4.0 International
+License.  To view a copy of this license, visit
+`http://creativecommons.org/licenses/by-sa/4.0/
+<http://creativecommons.org/licenses/by-sa/4.0/>`_.
