@@ -1,5 +1,5 @@
 =================================================
- Assignment 4: Balanced trees and set operations
+ Assignment 5: Balanced trees and set operations
 =================================================
 
 :Date: xxx

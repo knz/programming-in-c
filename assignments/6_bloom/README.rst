@@ -1,5 +1,5 @@
 =============================
- Assignment 5: Bloom filters
+ Assignment 6: Bloom filters
 =============================
 
 :Date: 13-03-2017
