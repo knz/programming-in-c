@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.20.1: https://docutils.sourceforge.io/" />
+<meta name="date" content="February 1st 2017" />
+<title>Assignment 1: Reverse-Polish Notation</title>
+<link rel="stylesheet" href="aux/min.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="assignment-1-reverse-polish-notation">
+<h1 class="title">Assignment 1: Reverse-Polish Notation</h1>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr><th class="docinfo-name">Date:</th>
+<td>February 1st 2017</td></tr>
+<tr class="deadline field"><th class="docinfo-name">Deadline:</th><td class="field-body">February 15th 2017 23:59</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="objectives">
+<h1>Objectives</h1>
+<p>You must implement a stack API and a conversion program that converts
+between two notational systems for mathematical expressions.</p>
+</div>
+<div class="section" id="requirements">
+<h1>Requirements</h1>
+<p>You should implement the stack API described in the <tt class="docutils literal">stack.h</tt> file. This
+datastructure has not been covered in the lectures yet, but it is easy enough
+to understand. Note that for this assignment the size of the stack is limited
+to a fixed number, which is defined in the <tt class="docutils literal">stack.c</tt> file. If you are
+unfamiliar with stacks, check out the reference links at the end of the
+assignment.</p>
+<p>Your conversion program must be named <tt class="docutils literal">infix2rpn</tt> and must accept a
+single expression using infix notation on the command-line, and output
+the following:</p>
+<ul class="simple">
+<li>on the standard output, its representation in <a class="reference external" href="https://en.wikipedia.org/wiki/Reverse_Polish_notation">reverse-polish notation</a>.</li>
+<li>then, on the standard error, a summary of the stack operations needed to
+perform the conversion.</li>
+</ul>
+<p>The program must terminate with exit code 1 if it encounters an
+invalid input, and exit code 0 when it succeeds.</p>
+<p>You must submit your work as a tarball <a class="footnote-reference" href="#footnote-1" id="footnote-reference-1">[1]</a>. Next to the source code,
+your archive must contain a text file file named “<tt class="docutils literal">AUTHORS</tt>”
+containing your name and Student ID.</p>
+<table class="docutils footnote" frame="void" id="footnote-1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#footnote-reference-1">[1]</a></td><td><tt class="docutils literal">make tarball</tt> will create the tarball for you.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="details-on-the-input-and-output-formats">
+<h1>Details on the input and output formats</h1>
+<ul>
+<li><p class="first">Input infix expressions are formed using the following rules:</p>
+<ul class="simple">
+<li>a non-empty sequence of decimal digits forms an expression.</li>
+<li>two expressions separated by a binary operator <tt class="docutils literal">+</tt> <tt class="docutils literal">-</tt> <tt class="docutils literal">*</tt> <tt class="docutils literal">/</tt> form an expression.</li>
+<li>one expression between parentheses <tt class="docutils literal">(</tt> <tt class="docutils literal">)</tt> forms an expression.</li>
+<li>spacing characters are meaningless and can be ignored.</li>
+</ul>
+<p>Your program must support proper precedence: <tt class="docutils literal">3*1+2</tt> and
+<tt class="docutils literal"><span class="pre">3*(1+2)</span></tt> are different!</p>
+</li>
+<li><p class="first">Output RPN expressions are a space-delimited sequence of
+operators and non-operators.</p>
+</li>
+<li><p class="first">On the standard error, the program must print the word &quot;<tt class="docutils literal">stats</tt>&quot;
+followed by three numbers separated by spaces, in this order:
+- the total number of stack &quot;push&quot; operations;
+- the total number of stack &quot;pop&quot; operations;
+- the maximum size of the stack during the conversion.</p>
+</li>
+</ul>
+<p>Example:</p>
+<pre class="literal-block">
+$ ./infix2rpn &quot;3+2&quot;
+3 2 +
+stats 1 1 1
+
+# Exit code is 0 in case of success.
+$ ./infix2rpn &quot;(3+2)/3&quot;; echo $?
+3 2 + 3 /
+stats 3 3 2
+0
+
+# Stats go to stderr, result to stdout.
+$ ./infix2rpn &quot;(3+2)/3&quot;  2&gt; /dev/null
+3 2 + 3 /
+$ ./infix2rpn &quot;(3+2)/3&quot;  &gt; /dev/null
+stats 3 3 2
+
+# Checking that the exit status is correct in case of error
+$ ./infix2rpn &quot;blabla&quot;  &gt; /dev/null 2&gt;&amp;1; echo $?
+1
+</pre>
+</div>
+<div class="section" id="getting-started">
+<h1>Getting started</h1>
+<ol class="arabic simple">
+<li>Unpack the provided source code archive; then run <tt class="docutils literal">make</tt>.</li>
+<li>Try out the generated <tt class="docutils literal">infix2rpn</tt> and familiarize yourself with its
+interface.</li>
+<li>Read the file <tt class="docutils literal">stack.h</tt> and understand the interface.</li>
+<li>Implement the data structure in <tt class="docutils literal">stack.c</tt>.</li>
+<li>Write a bunch of valid and invalid expressions to serve as test input
+for your program.</li>
+<li>Implement the conversion algorithm in <tt class="docutils literal">infix2rpn.c</tt>. Use your tests
+to check your work.</li>
+</ol>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">You will not need to analyze numbers and determine the value
+of each number on the input. (Of course, you can do it, but it is not needed
+to achieve a correct solution. The simple algorithm can look at digits
+individually and then forget about them.) Check the links referenced
+at the end of the assignment!</p>
+</div>
+</div>
+<div class="section" id="grading">
+<h1>Grading</h1>
+<p>Your grade starts from 0, and the following tests determine your grade:</p>
+<ul class="simple">
+<li>+0,5pt if you have submitted an archive in the right format with an <tt class="docutils literal">AUTHORS</tt> file.</li>
+<li>+0,5pt if your source code builds without errors and you have modified <tt class="docutils literal">stack.c</tt> or <tt class="docutils literal">infix2rpn.c</tt> in any way.</li>
+<li>+1pt if your stack API processes pushes and pops properly and detects stack overflow and underflow situations.</li>
+<li>+1pt if your stack API counts operations properly (number of pushes, pops and max. stack size).</li>
+<li>+1pt if your converter processes expressions without grouping and a single precedence level properly.</li>
+<li>+1pt if your converter processes expressions with grouping and a single precedence level properly.</li>
+<li>+1pt if your converter processes expressions with multiple precedence levels properly.</li>
+<li>+0,5pt if your converter detects invalid characters and improperly matched parentheses properly and reports a correct exit code.</li>
+<li>-1pt if <tt class="docutils literal">valgrind</tt> reports errors while running your converter.</li>
+<li>-1pt if <tt class="docutils literal">clang <span class="pre">-W</span> <span class="pre">-Wall</span></tt> reports warnings when compiling your code.</li>
+</ul>
+<p>The following extra features will be tested to obtain higher grades,
+but only if you have obtained a minimum of 5 points on the list above already:</p>
+<ul class="simple">
+<li>+1pt if your converter properly ignores spaces in the input.</li>
+<li>+1pt if your converter also supports <em>left-associative</em>
+exponentiation at a higher precedence level than multiplication,
+that is, <tt class="docutils literal">2*a^b^c</tt> is an expression and is equivalent to
+<tt class="docutils literal"><span class="pre">2*((a^b)^c)</span></tt>, and converts it appropriately.</li>
+<li>+0,5pt if your converter also supports <em>postfix function application</em>
+at the highest precedence level, that is, <tt class="docutils literal">(x)F</tt> is an expression
+(means apply function <tt class="docutils literal">F</tt> to <tt class="docutils literal">(x)</tt>, <tt class="docutils literal"><span class="pre">3^(4+2)F</span></tt> is equivalent to
+<tt class="docutils literal"><span class="pre">3^((4+2)F)</span></tt> and is converted to &quot;<tt class="docutils literal">3 4 2 + F ^</tt>&quot;; only one-letter functions
+can be supported).</li>
+<li>+1pt if your converter also supports <em>unary negation</em> in front of
+simple numbers and grouped expressions using the symbol <tt class="docutils literal">~</tt> (not
+&quot;<tt class="docutils literal">-</tt>&quot;!), for example <tt class="docutils literal">~123</tt> or <tt class="docutils literal">~(3+2)</tt>. If you choose to
+implement both this feature and the previous one, ensure that
+function application has a higher precedence than negation, that is,
+<tt class="docutils literal">~(3)F</tt> is equivalent to <tt class="docutils literal"><span class="pre">~((3)F)</span></tt>.</li>
+</ul>
+<p>Summary of desired precedence levels:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="84%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Level</th>
+<th class="head">Operator</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>1</td>
+<td>Function application</td>
+</tr>
+<tr><td>2</td>
+<td>Negation</td>
+</tr>
+<tr><td>3</td>
+<td>Exponentiation</td>
+</tr>
+<tr><td>4</td>
+<td>Division and multiplication</td>
+</tr>
+<tr><td>5</td>
+<td>Addition and substraction</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="see-also">
+<h1>See also</h1>
+<ul class="simple">
+<li>Video &quot;What is a stack data structure&quot;
+<a class="reference external" href="https://www.youtube.com/watch?v=FNZ5o9S9prU">https://www.youtube.com/watch?v=FNZ5o9S9prU</a></li>
+<li>Wikibook &quot;Programming Concepts: Stacks&quot;
+<a class="reference external" href="https://en.wikibooks.org/wiki/A-level_Computing/AQA/Paper_1/Fundamentals_of_data_structures/Stacks">https://en.wikibooks.org/wiki/A-level_Computing/AQA/Paper_1/Fundamentals_of_data_structures/Stacks</a></li>
+<li>Infix to postfix algorithm video:
+<a class="reference external" href="https://www.youtube.com/watch?v=LQ-iW8jm6Mk">https://www.youtube.com/watch?v=LQ-iW8jm6Mk</a></li>
+<li>Rosetta code: infix -&gt; rpn:
+<a class="reference external" href="https://rosettacode.org/wiki/Parsing/Shunting-yard_algorithm">https://rosettacode.org/wiki/Parsing/Shunting-yard_algorithm</a></li>
+<li>Dijkstra's shunting-yard algorithm explained:
+<a class="reference external" href="https://en.wikipedia.org/wiki/Shunting-yard_algorithm">https://en.wikipedia.org/wiki/Shunting-yard_algorithm</a></li>
+</ul>
+</div>
+</div>
+</body>
+</html>

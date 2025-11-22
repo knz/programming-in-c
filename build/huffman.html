@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.20.1: https://docutils.sourceforge.io/" />
+<meta name="date" content="22-02-2017" />
+<title>Assignment 3: Binary trees and Huffman coding</title>
+<link rel="stylesheet" href="aux/min.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="assignment-3-binary-trees-and-huffman-coding">
+<h1 class="title">Assignment 3: Binary trees and Huffman coding</h1>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr><th class="docinfo-name">Date:</th>
+<td>22-02-2017</td></tr>
+<tr class="deadline field"><th class="docinfo-name">Deadline:</th><td class="field-body">03-03-2017 23:59</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="objectives">
+<h1>Objectives</h1>
+<p>You must implement a data (de)compressor and exercise your understanding
+of binary trees.</p>
+</div>
+<div class="section" id="requirements">
+<h1>Requirements</h1>
+<p>Your deliverable must contain two programs <tt class="docutils literal">encode</tt> and <tt class="docutils literal">decode</tt>,
+behaving as detailed in the next section.</p>
+<p>You must submit your work as a tarball <a class="footnote-reference" href="#footnote-1" id="footnote-reference-1">[1]</a>. Next to the source code,
+your archive must contain a text file file named “<tt class="docutils literal">AUTHORS</tt>”
+containing your name and Student ID(s).</p>
+<table class="docutils footnote" frame="void" id="footnote-1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#footnote-reference-1">[1]</a></td><td><a class="reference external" href="http://lmgtfy.com/?q=how+to+make+a+tarball">http://lmgtfy.com/?q=how+to+make+a+tarball</a></td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="behavior-of-the-encoder-and-decoder-programs">
+<h1>Behavior of the encoder and decoder programs</h1>
+<p>The <tt class="docutils literal">encode</tt> program must:</p>
+<ul class="simple">
+<li>accept an optional command-line argument that specifies which tree it should use -- if this argument
+is not specified, the <tt class="docutils literal">encode</tt> program should decide a Huffman tree itself;</li>
+<li>read data to encode from its standard input; and</li>
+<li>produce on its standard output:<ul>
+<li>on the first line, a representation of a Huffman tree it used, using the format
+documented for the <tt class="docutils literal">print_tree</tt> function;</li>
+<li>starting from the 2nd line, the encoding of the input data in
+ASCII-coded binary, that is using one full character &quot;<tt class="docutils literal">0</tt>&quot; for
+binary 0 and one full character &quot;<tt class="docutils literal">1</tt>&quot; for binary 1;</li>
+<li>at the end of the encoded data, the final marker character &quot;<tt class="docutils literal">.</tt>&quot; followed by a newline character;</li>
+<li>on the last line of output: the number of characters from the input that were encoded,
+the number of nodes in the Huffman tree, the number of binary
+digits in the encoded output, and the compression ratio as percentage (rounded down).</li>
+</ul>
+</li>
+</ul>
+<p>The <tt class="docutils literal">decode</tt> program must read data from its standard input:</p>
+<ul class="simple">
+<li>on the first line, a representation of a Huffman tree using the same format as <tt class="docutils literal">encode</tt>;</li>
+<li>starting from the 2nd line, the encoded input data in ASCII-coded binary, terminated by &quot;<tt class="docutils literal">.</tt>&quot;;</li>
+<li>the remainder of the input, if any, is silently discarded.</li>
+</ul>
+<p>Then prints on its standard output the result of decoding the provided input using the provided tree.</p>
+</div>
+<div class="section" id="order-of-work-strongly-suggested">
+<h1>Order of work (strongly suggested)</h1>
+<ol class="arabic">
+<li><p class="first">Implement the missing <tt class="docutils literal">print_tree()</tt> function
+which represents its tree argument using RPN notation:</p>
+<ul class="simple">
+<li>a single node tree with node value <tt class="docutils literal">X</tt> is printed as <tt class="docutils literal">X</tt>.</li>
+<li>the binary tree with two children X and Y is printed by printing X, then
+printing Y, then printing &quot;.&quot;.</li>
+</ul>
+<p>For example this tree:</p>
+<pre class="literal-block">
+(root)
+ /  \
+A   / \
+   B   C
+</pre>
+<p>Will be printed as: <tt class="docutils literal">ABC..</tt></p>
+<p>And this tree:</p>
+<pre class="literal-block">
+  (root)
+  /    \
+ / \    C
+A   B
+</pre>
+<p>Will be printed as: <tt class="docutils literal">AB.C.</tt></p>
+<p>You can test your <tt class="docutils literal">print_tree()</tt> at this point by uncommenting
+the <tt class="docutils literal">print_tree()</tt> call in <tt class="docutils literal">decode.c</tt> and running <tt class="docutils literal">./decode</tt>
+with any kind of input. This will use the fixed tree generated by
+<tt class="docutils literal">fixed_tree()</tt>.  Verify that your output matches that tree.</p>
+</li>
+<li><p class="first">Using the provided example Huffman tree in the code as constant
+tree input (ignoring the command-line argument), complete:</p>
+<ul class="simple">
+<li>the definition of the <tt class="docutils literal">code</tt> struct (you need to decide this yourself);</li>
+<li>the function <tt class="docutils literal">compute_code_table()</tt> which translates a tree
+to a code table,</li>
+<li>the function <tt class="docutils literal">print_code()</tt> which prints the encoded sequence of
+<tt class="docutils literal">0</tt> and <tt class="docutils literal">1</tt> character for each input character.</li>
+</ul>
+<p>This way, the provided <tt class="docutils literal">encode</tt> program can use both your
+<tt class="docutils literal">print_tree</tt> function from step 1 and your algorithm in this step
+to produce a coded tree and a coded input valid for the provided
+<tt class="docutils literal">decode.ref</tt> program. You can then use <tt class="docutils literal">decode.ref</tt> to check
+whether your work up to this point is correct. The command
+<tt class="docutils literal">echo &quot;abca&quot; | ./encode&nbsp; | ./decode.ref</tt> should print <tt class="docutils literal">abca</tt>.</p>
+</li>
+<li><p class="first">Again using the provided example Huffman tree as constant (ignoring
+the first line of input), complete the <tt class="docutils literal">main()</tt>
+function of <tt class="docutils literal">decode</tt> to decompress input data using that tree.</p>
+<p>You can then use your <tt class="docutils literal">encode</tt> program from step 2 to check your
+newly minted <tt class="docutils literal">decode</tt> program.</p>
+</li>
+<li><p class="first">Complete your <tt class="docutils literal">decode</tt> program by implementing the missing
+<tt class="docutils literal">load_tree</tt> function which reads a tree definition created by
+<tt class="docutils literal">print_tree</tt> and re-creates the corresponding tree. Hint: you may
+want to use the generic stack implemented in <tt class="docutils literal">stack.c</tt>.</p>
+<p>Then you can use the provided <tt class="docutils literal">encode.ref</tt> to check that your
+decode program can now handle inputs with different trees.
+Check if the trees printed by <tt class="docutils literal">encode.ref</tt> and <tt class="docutils literal">decode</tt> match.
+The command <tt class="docutils literal">echo &quot;xxyzzz&quot; | ./encode.ref | ./decode</tt> should
+print <tt class="docutils literal">xxyzzz</tt>.</p>
+</li>
+<li><p class="first">Complete your <tt class="docutils literal">encode</tt> program by writing the <tt class="docutils literal">compute_tree()</tt>
+algorithm that creates an optimal Huffman tree from the input,
+instead of using the provided example.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="grading">
+<h1>Grading</h1>
+<p>Your grade starts from 0, and the following tests determine your grade:</p>
+<ul class="simple">
+<li>+0,5pt if you have submitted an archive in the right format with an <tt class="docutils literal">AUTHORS</tt> file.</li>
+<li>+0,5pt if your source code builds without errors and you have modified <tt class="docutils literal">tree.c</tt>, <tt class="docutils literal">encode.c</tt> or <tt class="docutils literal">decode.c</tt> in any way.</li>
+<li>+1pt if your <tt class="docutils literal">print_tree</tt> function works.</li>
+<li>+2pt if your <tt class="docutils literal">encode</tt> program works using only the provided example tree.</li>
+<li>+2pt if your <tt class="docutils literal">decode</tt> program works using only the provided example tree.</li>
+<li>-1pt if <tt class="docutils literal">valgrind</tt> reports errors while running your converter.</li>
+<li>-1pt if <tt class="docutils literal">clang <span class="pre">-W</span> <span class="pre">-Wall</span></tt> reports warnings when compiling your code</li>
+</ul>
+<p>The following extra features will be tested to obtain higher grades,
+but only if you have obtained a minimum of 5 points on the list above already:</p>
+<ul class="simple">
+<li>+1pt if your <tt class="docutils literal">load_tree</tt> function works properly.</li>
+<li>+1pt if your <tt class="docutils literal">decode</tt> program works using arbitrary Huffman trees provided as input.</li>
+<li>+2pt if your <tt class="docutils literal">encode</tt> program constructs minimal Huffman trees for arbitrary inputs.</li>
+</ul>
+</div>
+<div class="section" id="overview-of-huffman-coding">
+<h1>Overview of Huffman coding</h1>
+<p>Algorithm to encode the data:</p>
+<ol class="arabic simple">
+<li>Compute frequency table of input</li>
+<li>Translate the frequency table to a tree
+- This is where the <tt class="docutils literal">encode</tt> program in this assignment also prints out the coding tree.</li>
+<li>Translate the tree to an encoding table</li>
+<li>Use the encoding table to encode the data
+- This is where the <tt class="docutils literal">encode</tt> programs emits the encoded output.</li>
+</ol>
+</div>
+</div>
+</body>
+</html>

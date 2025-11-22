@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.20.1: https://docutils.sourceforge.io/" />
+<meta name="date" content="February 1st 2017" />
+<title>Assignment 2: mysort</title>
+<link rel="stylesheet" href="aux/min.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="assignment-2-mysort">
+<h1 class="title">Assignment 2: mysort</h1>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr><th class="docinfo-name">Date:</th>
+<td>February 1st 2017</td></tr>
+<tr class="deadline field"><th class="docinfo-name">Deadline:</th><td class="field-body">February 22nd 2017 23:59</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="objectives">
+<h1>Objectives</h1>
+<p>You must implement a list API and a multi-tool number sorting program.</p>
+</div>
+<div class="section" id="requirements">
+<h1>Requirements</h1>
+<p>Your sorting program must be named <tt class="docutils literal">mysort</tt> and its basic operation is as follows:</p>
+<ul class="simple">
+<li>it reads input numbers from its standard input;</li>
+<li>it prints the same numbers in sorted order on its standard output,
+one number per line.</li>
+</ul>
+<p>Numbers in the input are separated by white space. Your program must
+perform sorting by maintaining a sorted list in memory and maintaining
+this order while reading the input (insertion sort).</p>
+<p>You must submit your work as a tarball <a class="footnote-reference" href="#footnote-1" id="footnote-reference-1">[1]</a>. Next to the source code,
+your archive must contain a text file file named “<tt class="docutils literal">AUTHORS</tt>”
+containing your name and Student ID.</p>
+<table class="docutils footnote" frame="void" id="footnote-1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#footnote-reference-1">[1]</a></td><td><a class="reference external" href="http://lmgtfy.com/?q=how+to+make+a+tarball">http://lmgtfy.com/?q=how+to+make+a+tarball</a></td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="getting-started">
+<h1>Getting started</h1>
+<ol class="arabic">
+<li><p class="first">Unpack the provided source code archive; then run <tt class="docutils literal">make</tt>.</p>
+</li>
+<li><p class="first">Try out the generated <tt class="docutils literal">mysort</tt> and familiarize yourself with its
+interface.</p>
+</li>
+<li><p class="first">Read the file <tt class="docutils literal">list.h</tt> and understand the interface.</p>
+</li>
+<li><p class="first">Implement the data structure in <tt class="docutils literal">list.c</tt>.</p>
+</li>
+<li><p class="first">Implement the input and insertion sort algorithm in
+<tt class="docutils literal">main.c</tt>.</p>
+<p>You can use e.g. <tt class="docutils literal">du ~ | awk '{print $1}' | ./mysort</tt> to test your
+work.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="grading">
+<h1>Grading</h1>
+<p>Your grade starts from 0, and the following tests determine your grade:</p>
+<ul class="simple">
+<li>+0,5pt if you have submitted an archive in the right format with an <tt class="docutils literal">AUTHORS</tt> file.</li>
+<li>+0,5pt if your source code builds without errors and you have modified <tt class="docutils literal">list.c</tt> or <tt class="docutils literal">main.c</tt> in any way.</li>
+<li>+2pt if your list API processes insertions and removals properly.</li>
+<li>+3pt if your <tt class="docutils literal">mysort</tt> processes and sorts its input properly and terminates with exit code 0.</li>
+<li>-0,5pt if your program misbehaves on zero-sized inputs.</li>
+<li>-0,5pt if your program misbehaves when the last line does not terminate with a newline character.</li>
+<li>-1pt if <tt class="docutils literal">valgrind</tt> reports errors while running your program.
+Valgrind and the address sanitizer don't play well together so
+temporarily remove the <tt class="docutils literal"><span class="pre">-fsanitize=address</span></tt> flags from the Makefile when
+testing your code with <tt class="docutils literal">valgrind</tt>.</li>
+<li>-1pt if <tt class="docutils literal">clang <span class="pre">-W</span> <span class="pre">-Wall</span></tt> reports warnings when compiling your code.</li>
+</ul>
+<p>The following extra features will be tested to obtain higher grades,
+but only if you have obtained a minimum of 5 points on the list above already:</p>
+<ul class="simple">
+<li>+1pt if your <tt class="docutils literal">mysort</tt> accepts option <tt class="docutils literal"><span class="pre">-u</span></tt> which causes it to eliminate duplicate output lines.</li>
+<li>+0,5pt if your <tt class="docutils literal">mysort</tt> accepts option <tt class="docutils literal"><span class="pre">-S</span></tt> which calculates the
+sum of all the items and appends that to the end of the list.</li>
+<li>+0,5pt if your <tt class="docutils literal">mysort</tt> accepts option <tt class="docutils literal"><span class="pre">-s</span></tt> taking a single argument, which causes it to only consider input lines multiple of that number.</li>
+<li>+0,5pt if your <tt class="docutils literal">mysort</tt> accepts option <tt class="docutils literal"><span class="pre">-x</span></tt> taking a single argument, which causes it to ignore any input line that are multiple of that number.</li>
+<li>+0,5pt if your <tt class="docutils literal">mysort</tt> accepts option <tt class="docutils literal"><span class="pre">-h</span></tt> taking a single positive number <em>N</em> as argument, which causes it to stop
+after outputting the first <em>N</em> lines in sorted order.</li>
+<li>+0,5pt if your <tt class="docutils literal">mysort</tt> accepts option <tt class="docutils literal"><span class="pre">-t</span></tt> taking a single positive number <em>N</em> as argument, which causes it to stop
+after outputting the last <em>N</em> lines in sorted order.</li>
+<li>+0,5pt if your <tt class="docutils literal">mysort</tt> accepts option <tt class="docutils literal"><span class="pre">-3</span></tt> which causes it to replace all
+occurrences of the numbers 51, 69 and 42 by 666.</li>
+</ul>
+</div>
+<div class="section" id="see-also">
+<h1>See also</h1>
+<ul class="simple">
+<li>Insertion sort: <a class="reference external" href="https://en.wikipedia.org/wiki/Insertion_sort">https://en.wikipedia.org/wiki/Insertion_sort</a></li>
+<li>Parsing program options using <tt class="docutils literal">getopt</tt>: <a class="reference external" href="https://www.gnu.org/software/libc/manual/html_node/Getopt.html">https://www.gnu.org/software/libc/manual/html_node/Getopt.html</a></li>
+</ul>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.20.1: https://docutils.sourceforge.io/" />
+<meta name="date" content="xxx" />
+<title>Assignment 5: Balanced trees and set operations</title>
+<link rel="stylesheet" href="aux/min.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="assignment-5-balanced-trees-and-set-operations">
+<h1 class="title">Assignment 5: Balanced trees and set operations</h1>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr><th class="docinfo-name">Date:</th>
+<td>xxx</td></tr>
+<tr class="deadline field"><th class="docinfo-name">Deadline:</th><td class="field-body">xxx</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="objectives">
+<h1>Objectives</h1>
+<p>You must implement a tree and set API and a multi-tool set manipulation program.</p>
+</div>
+<div class="section" id="requirements">
+<h1>Requirements</h1>
+<p>You will construct the following programs that demonstrate your tree and set API:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal">ident</tt></dt>
+<dd>Prints out the set formed by its input file unchanged.</dd>
+<dt><tt class="docutils literal">union</tt></dt>
+<dd>Computes the set union between two input files.</dd>
+<dt><tt class="docutils literal">inter</tt></dt>
+<dd>Computes the set intersection between two input files.</dd>
+<dt><tt class="docutils literal">substract</tt></dt>
+<dd>Computes the set difference between two input files.</dd>
+</dl>
+<p>All these programs operate on the set of unique input lines of their
+respective operands and prints out their output in sorted order. For
+example, <tt class="docutils literal">ident</tt> forms the set of unique input lines from its input
+and prints them back out in sorted order.</p>
+<p>Your implementations must achieve this by loading the input lines as
+nodes in an AVL tree <a class="footnote-reference" href="#footnote-1" id="footnote-reference-1">[1]</a>, perform computation on the tree, and print
+out the results using an in-order traversal of the result tree.</p>
+<table class="docutils footnote" frame="void" id="footnote-1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#footnote-reference-1">[1]</a></td><td><a class="reference external" href="https://en.wikipedia.org/wiki/AVL_tree">https://en.wikipedia.org/wiki/AVL_tree</a></td></tr>
+</tbody>
+</table>
+<p>You must submit your work as a tarball <a class="footnote-reference" href="#footnote-2" id="footnote-reference-2">[2]</a>. Next to the source code,
+your archive must contain a text file file named “<tt class="docutils literal">AUTHORS</tt>”
+containing your name and Student ID(s).</p>
+<table class="docutils footnote" frame="void" id="footnote-2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#footnote-reference-2">[2]</a></td><td><a class="reference external" href="http://lmgtfy.com/?q=how+to+make+a+tarball">http://lmgtfy.com/?q=how+to+make+a+tarball</a></td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="additional-program">
+<h1>Additional program</h1>
+<p>For a maximum grade you must also provide an additional program
+<tt class="docutils literal">calc</tt> which can compute arbitrary algebraic set expressions:</p>
+<ul class="simple">
+<li><tt class="docutils literal">calc</tt> takes an expression as command-line argument;</li>
+<li>the expression is expressed in reverse polish notation, and can contain
+the following elements separated by spaces:<ul>
+<li>a word or number, which defines a set containing only that number as single element;</li>
+<li>the character <tt class="docutils literal">.</tt>, which loads the empty set;</li>
+<li>the character <tt class="docutils literal">+</tt>, that computes the union of the last two sets;</li>
+<li>the character <tt class="docutils literal">-</tt>, that computes the set difference of the last two sets;</li>
+<li>the character <tt class="docutils literal">*</tt>, that computes the intersection of the last two sets.</li>
+</ul>
+</li>
+<li>the resulting set is printed on standard output.</li>
+</ul>
+<p>For example:</p>
+<pre class="literal-block">
+$ ./calc &quot;a b +&quot;
+a
+b
+
+$ ./calc &quot;a a + b + b c + *&quot;
+b
+</pre>
+</div>
+<div class="section" id="getting-started">
+<h1>Getting started</h1>
+<ol class="arabic simple">
+<li>Unpack the provided source code archive; then run <tt class="docutils literal">make</tt>.</li>
+<li>Try out the generated <tt class="docutils literal">ident</tt> program and familiarize yourself
+with its interface.</li>
+<li>Read the file <tt class="docutils literal">tree.h</tt> and understand the interface.</li>
+<li>Implement the data structure in <tt class="docutils literal">tree.c</tt>.</li>
+<li>Implement the set union and intersection operator, then test
+the resulting <tt class="docutils literal">union</tt> and <tt class="docutils literal">intersect</tt> programs.</li>
+<li>Complete <tt class="docutils literal">substract</tt>. Use tree node deletion to achieve this.</li>
+<li>Complete <tt class="docutils literal">calc</tt>.</li>
+</ol>
+</div>
+<div class="section" id="grading">
+<h1>Grading</h1>
+<p>Your grade starts from 0, and the following tests determine your grade:</p>
+<ul class="simple">
+<li>+0,5pt if you have submitted an archive in the right format with an <tt class="docutils literal">AUTHORS</tt> file.</li>
+<li>+0,5pt if your source code builds without errors and you have modified <tt class="docutils literal">tree.c</tt> in any way.</li>
+<li>+2pt if your tree API processes insertions and balancing properly.</li>
+<li>+1pt if your <tt class="docutils literal">ident</tt> program works properly.</li>
+<li>+1pt if your <tt class="docutils literal">inter</tt> program works properly.</li>
+<li>+1pt if your <tt class="docutils literal">union</tt> program works properly.</li>
+<li>+1pt if your <tt class="docutils literal">substract</tt> program works properly.</li>
+<li>+3pt if your <tt class="docutils literal">calc</tt> program works properly.</li>
+<li>-0,5pt if your programs misbehave on zero-sized inputs.</li>
+<li>-0,5pt if your programs misbehave when the last line does not terminate with a newline character.</li>
+<li>-1pt if <tt class="docutils literal">valgrind</tt> reports errors while running your program.</li>
+<li>-1pt if <tt class="docutils literal">clang <span class="pre">-W</span> <span class="pre">-Wall</span></tt> reports warnings when compiling your code.</li>
+</ul>
+</div>
+</div>
+</body>
+</html>

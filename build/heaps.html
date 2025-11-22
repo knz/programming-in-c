@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.20.1: https://docutils.sourceforge.io/" />
+<meta name="date" content="3-03-2017" />
+<title>Assignment 4: Heaps and priority queues</title>
+<link rel="stylesheet" href="aux/min.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="assignment-4-heaps-and-priority-queues">
+<h1 class="title">Assignment 4: Heaps and priority queues</h1>
+<table class="docinfo" frame="void" rules="none">
+<col class="docinfo-name" />
+<col class="docinfo-content" />
+<tbody valign="top">
+<tr><th class="docinfo-name">Date:</th>
+<td>3-03-2017</td></tr>
+<tr class="deadline field"><th class="docinfo-name">Deadline:</th><td class="field-body">11-03-2017 23:59</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="objectives">
+<h1>Objectives</h1>
+<p>You must implement a heap and priority queue API and use them
+to write a waiting queue manager.</p>
+</div>
+<div class="section" id="requirements">
+<h1>Requirements</h1>
+<p>You will construct a program <tt class="docutils literal">queue</tt> that demonstrates your heap and
+priority queue API.  The required behavior of the program is given in
+the following section.</p>
+<p>It is strongly recommended to implement your heap structure as an
+array. We provide a dynamic array implementation in <tt class="docutils literal">array.h</tt> and
+<tt class="docutils literal">array.c</tt>. We advise you to use these array functions to implement
+your heap.</p>
+<p>You must submit your work as a tarball <a class="footnote-reference" href="#footnote-1" id="footnote-reference-1">[1]</a>. Next to the source code,
+your archive must contain a text file file named “<tt class="docutils literal">AUTHORS</tt>”
+containing your name and Student ID(s).</p>
+<table class="docutils footnote" frame="void" id="footnote-1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#footnote-reference-1">[1]</a></td><td><a class="reference external" href="http://lmgtfy.com/?q=how+to+make+a+tarball">http://lmgtfy.com/?q=how+to+make+a+tarball</a></td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="waiting-queue">
+<h1>Waiting queue</h1>
+<p>Your program will manage queuing at a Doctor's office which does not
+take appointments. The situation at this office is as follows:</p>
+<ul class="simple">
+<li>patients arrive at the front door in random order and enter the
+waiting area;</li>
+<li>every session, the doctor picks the first patient in alphabetic
+order;</li>
+<li>at the end of every day, all remaining patients go back home.</li>
+</ul>
+<p>To translate this into a program, you will work with the following:</p>
+<ul class="simple">
+<li>the program receives the incoming patients on its standard input.
+Each patient is given as a line of input text containing the patient's
+first name followed by his/her age, separated by a space character.</li>
+<li>the program will work by running a loop, performing the following steps:<ol class="arabic">
+<li>accept all the patients &quot;waiting at the door&quot; at that time: read
+all the input lines until you reach a &quot;<tt class="docutils literal">.</tt>&quot; on a separate line.</li>
+<li>place the patients in a priority queue ordered by name;</li>
+<li>pick the first patient in alphabetic order using
+the priority queue;</li>
+<li>treat the patient;</li>
+<li>make the patient leave: print the patient's name on the standard
+output and remove the patient from the queue.</li>
+<li>print a &quot;<tt class="docutils literal">.</tt>&quot; on a single line to signal the end of the hour long session.</li>
+</ol>
+</li>
+<li>if there are no patients to pick, the doctor will do nothing during
+the complete session, but you should still print a &quot;<tt class="docutils literal">.</tt>&quot; to
+show that time has passed.</li>
+<li>&quot;at the end of the day&quot; (after 10 iterations of the loop,
+so 10 hours later), &quot;all patients leave&quot;: print
+the names of all patients already in the queue in alphabetical order
+and exit.</li>
+</ul>
+<p>A typical day of 10 hour long sessions in the doctors office is shown
+below. Carl, Bob, Albert and Barbara show up early and get treated by the
+doctor in alphabetical order.
+Jim, Tom and Zoe arrive late in the day, so Tom and Zoe leave without
+being treated:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="52%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Input</th>
+<th class="head">Output</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><p class="first">Carl 22</p>
+<p>Bob 68</p>
+<p>Albert 35</p>
+<p class="last">.</p>
+</td>
+<td><p class="first">Albert</p>
+<p class="last">.</p>
+</td>
+</tr>
+<tr><td><p class="first">Barbara 40</p>
+<p class="last">.</p>
+</td>
+<td><p class="first">Barbara</p>
+<p class="last">.</p>
+</td>
+</tr>
+<tr><td>.</td>
+<td><p class="first">Bob</p>
+<p class="last">.</p>
+</td>
+</tr>
+<tr><td>.</td>
+<td><p class="first">Carl</p>
+<p class="last">.</p>
+</td>
+</tr>
+<tr><td>.</td>
+<td>.</td>
+</tr>
+<tr><td>.</td>
+<td>.</td>
+</tr>
+<tr><td>.</td>
+<td>.</td>
+</tr>
+<tr><td><p class="first">Alice 28</p>
+<p class="last">.</p>
+</td>
+<td><p class="first">Alice</p>
+<p class="last">.</p>
+</td>
+</tr>
+<tr><td>.</td>
+<td>.</td>
+</tr>
+<tr><td><p class="first">Jim 30</p>
+<p>Tom 31</p>
+<p>Zoe 29</p>
+<p class="last">.</p>
+</td>
+<td><p class="first">Jim</p>
+<p class="last">.</p>
+</td>
+</tr>
+<tr><td>&nbsp;</td>
+<td><p class="first">Tom</p>
+<p class="last">Zoe</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="getting-started">
+<h1>Getting started</h1>
+<ol class="arabic simple">
+<li>Unpack the provided source code archive; then run <tt class="docutils literal">make</tt>.</li>
+<li>Try out the generated <tt class="docutils literal">queue</tt> program and familiarize yourself
+with its interface.</li>
+<li>Read the files <tt class="docutils literal">prioq.h</tt> and understand the interface.</li>
+<li>Implement the data structure in <tt class="docutils literal">heap.c</tt>.</li>
+<li>Implement the missing code in <tt class="docutils literal">main.c</tt>.</li>
+</ol>
+</div>
+<div class="section" id="grading">
+<h1>Grading</h1>
+<p>Your grade starts from 0, and the following tests determine your grade:</p>
+<ul class="simple">
+<li>+0,5pt if you have submitted an archive in the right format with an <tt class="docutils literal">AUTHORS</tt> file.</li>
+<li>+0,5pt if your source code builds without errors and you have modified <tt class="docutils literal">heap.c</tt> in any way.</li>
+<li>+2pt if your priority queue API processes insertions and removal properly.</li>
+<li>+3pt if your <tt class="docutils literal">queue</tt> program orders the patients properly.</li>
+<li>+1pt if your <tt class="docutils literal">queue</tt> program properly forces every patient to leave at the end of the day in the correct order.</li>
+<li>-0,5pt if your <tt class="docutils literal">queue</tt> program misbehaves if no patient arrived since the last patient left.</li>
+<li>-1pt if <tt class="docutils literal">valgrind</tt> reports errors while running your program.</li>
+<li>-1pt if <tt class="docutils literal">clang <span class="pre">-W</span> <span class="pre">-Wall</span></tt> reports warnings when compiling your code.</li>
+</ul>
+<p>The following extra features will be tested to obtain higher grades,
+but only if you have obtained a minimum of 5 points on the list above already:</p>
+<ul>
+<li><p class="first">+1.5pt if your <tt class="docutils literal">queue</tt> program accepts a single command-line
+argument <tt class="docutils literal"><span class="pre">-y</span></tt> which causes, when specified, to change all the
+patient processing based on age to pick the youngest patient instead
+of alphabetical order. Patients leaving at the end of the day are
+also sorted by increasing age.</p>
+</li>
+<li><p class="first">+1.5pt if your <tt class="docutils literal">queue</tt> program also accepts a duration of
+the patient's appointment on the input (after the age), and keeps
+the doctor busy for that duration when that patient is picked.
+If a patient is still being treated at the end of the day their
+treatment is not completed and the patient is forced to leave first.
+An example with the duration extension is shown below:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="52%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Input</th>
+<th class="head">Output</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><p class="first">Zoe 22 4</p>
+<p class="last">.</p>
+</td>
+<td>.</td>
+</tr>
+<tr><td><p class="first">Martha 50 1</p>
+<p class="last">.</p>
+</td>
+<td>.</td>
+</tr>
+<tr><td>.</td>
+<td>.</td>
+</tr>
+<tr><td><p class="first">Albert 11 1</p>
+<p class="last">.</p>
+</td>
+<td><p class="first">Zoe</p>
+<p class="last">.</p>
+</td>
+</tr>
+<tr><td>.</td>
+<td><p class="first">Albert</p>
+<p class="last">.</p>
+</td>
+</tr>
+<tr><td>.</td>
+<td><p class="first">Martha</p>
+<p class="last">.</p>
+</td>
+</tr>
+<tr><td colspan="2">etc..</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</div>
+</div>
+</body>
+</html>
