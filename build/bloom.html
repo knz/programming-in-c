@@ -28,7 +28,7 @@ that uses a bloom filter to detect duplicates in its input.</p>
 </div>
 <div class="section" id="requirements">
 <h1>Requirements</h1>
-<p>You must write a program <cite>dups</cite> which can process a very large number
+<p>You must write a program <tt class="docutils literal">dups</tt> which can process a very large number
 of lines on its standard input (containing possibly billions of input
 lines) and reproduces its input on its standard output without any duplicates.
 The program may drop a small fraction of the input which are not duplicates.</p>
@@ -43,7 +43,7 @@ program is able to reproduce the original input without duplicates.</p>
 <ul class="simple">
 <li><em>k</em>,  the number of hash functions to use;</li>
 <li><em>n</em>,  the size of the bloom filter.</li>
-<li><em>ks</em>, a set of <cite>k</cite> parameters to be passed to initialize the <cite>k</cite> different
+<li><em>ks</em>, a set of <tt class="docutils literal">k</tt> parameters to be passed to initialize the <tt class="docutils literal">k</tt> different
 hash functions. Each parameter can be a single value or a combination of
 multiple arguments of different types, separated in a format of your
 choosing.</li>
@@ -83,8 +83,8 @@ Your program must then:</p>
 <ol class="arabic simple">
 <li>print a last line containing the number of input items read so far
 and, separated by a single space, the number of output lines produced so far.
-This line should be printed to <cite>stderr</cite>;</li>
-<li>terminate with exit code <cite>EXIT_SUCCESS</cite>.</li>
+This line should be printed to <tt class="docutils literal">stderr</tt>;</li>
+<li>terminate with exit code <tt class="docutils literal">EXIT_SUCCESS</tt>.</li>
 </ol>
 <p>For example with the input above the complete output would be:</p>
 <pre class="literal-block">
@@ -117,10 +117,10 @@ the previous two steps. You may build the Bloom filter directly into
 additional files to the Makefile under all the relevant targets, including
 the bloom_submit.tar.gz target so the files will be included in your
 tarball.</em></li>
-<li>Implement the <cite>dups</cite> program to read the input from standard input and
+<li>Implement the <tt class="docutils literal">dups</tt> program to read the input from standard input and
 detect potential duplicates using your Bloom filter, printing the
 non-duplicate entries to standard output.</li>
-<li>Find good values for the <cite>ks</cite> parameter of your <cite>dups</cite> program and store
+<li>Find good values for the <tt class="docutils literal">ks</tt> parameter of your <tt class="docutils literal">dups</tt> program and store
 these, separated by spaces, in the file called <tt class="docutils literal">PARAMS</tt>. Please note that
 you are free to determine the format (and even type) of these parameters.
 This does require you edit the behaviour of the <tt class="docutils literal">init_ks</tt> function to
@@ -151,7 +151,7 @@ have provided at least 10 different initialization parameters in the
 <tt class="docutils literal">PARAMS</tt> file to test your functions.</li>
 <li>+0.5pt if your Bloom filter is written in a separate files <tt class="docutils literal">bloom.c</tt> and
 <tt class="docutils literal">bloom.h</tt>.</li>
-<li>+2pt if your <cite>dups</cite> program works minimally:<ul>
+<li>+2pt if your <tt class="docutils literal">dups</tt> program works minimally:<ul>
 <li>the program never outputs the same item more than once.</li>
 <li>given an input that contains <em>n</em> unique items, your program reproduces a
 non-zero fraction of <em>n</em> output items, regardless of the value of <em>n</em>.</li>
@@ -162,6 +162,16 @@ implementation (more output items overall = better program).</li>
 <li>+1pt if your implementation of the array API is using less than one
 byte per position overall.</li>
 </ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="copyright-and-licensing">
+<h1>Copyright and licensing</h1>
+<p>Copyright © 2017, <a class="reference external" href="https://raphaelposs.com">Raphael Poss</a>.  Permission is granted to
+distribute, reuse and modify this document and other documents for the
+Systems Programming course by the same author according to the terms
+of the Creative Commons Attribution-ShareAlike 4.0 International
+License.  To view a copy of this license, visit
+<a class="reference external" href="http://creativecommons.org/licenses/by-sa/4.0/">http://creativecommons.org/licenses/by-sa/4.0/</a>.</p>
 </div>
 </div>
 </body>
