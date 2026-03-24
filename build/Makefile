@@ -6,7 +6,7 @@ DOCSRCDIR = $(SRCDIR)/src
 SYLLABUS_AUX_FILES = \
   beyond-lifetime.jpg \
   different-types.jpg \
-  easy.h \
+  easy.h test.c \
   fry.jpg \
   goto-nope.jpg \
   goto-wow.jpg \
